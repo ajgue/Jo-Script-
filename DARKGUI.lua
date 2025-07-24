@@ -1,71 +1,17 @@
--- Color and font settings
-local Cor_Hub = Color3.fromRGB(30, 30, 30)             -- Dark background
-local Cor_Options = Color3.fromRGB(45, 45, 45)         -- Dark options color
-local Cor_Text = Color3.fromRGB(255, 255, 255)         -- White text
-local Cor_DarkText = Color3.fromRGB(200, 200, 200)     -- Light gray text
-local Corner_Radius = UDim.new(0, 10)                  -- Rounded corners 10 px
-local Text_Font = Enum.Font.FredokaOne                  -- FredokaOne font
-
--- Get the main frame (change as needed)
-local frame = script.Parent
-
--- Background and corners setup
-frame.BackgroundColor3 = Cor_Hub
-frame.ClipsDescendants = true
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = Corner_Radius
-corner.Parent = frame
-
--- Add stroke with rainbow gradient
-local stroke = Instance.new("UIStroke")
-stroke.Parent = frame
-stroke.Thickness = 4
-stroke.Transparency = 0
-stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
--- Rainbow gradient setup
-local gradient = Instance.new("UIGradient")
-gradient.Parent = stroke
-gradient.Rotation = 0
-gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),     -- Red
-    ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 127, 0)),-- Orange
-    ColorSequenceKeypoint.new(0.34, Color3.fromRGB(255, 255, 0)),-- Yellow
-    ColorSequenceKeypoint.new(0.51, Color3.fromRGB(0, 255, 0)),  -- Green
-    ColorSequenceKeypoint.new(0.68, Color3.fromRGB(0, 0, 255)),  -- Blue
-    ColorSequenceKeypoint.new(0.85, Color3.fromRGB(75, 0, 130)), -- Indigo
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(148, 0, 211))    -- Violet
+local Configs_HUB = { 
+  Cor_Hub = Color3.fromRGB(0, 0, 0), 
+  Cor_Options = Color3.fromRGB(0, 0, 0), 
+  Cor_Stroke = Color3.fromRGB(0, 255, 200), 
+  Cor_Text = Color3.fromRGB(240, 240, 240), 
+  Cor_DarkText = Color3.fromRGB(240, 240, 240), 
+  Corner_Radius = UDim.new(0, 15), 
+  Text_Font = Enum.Font.FredokaOne 
 }
-
--- Rotate the rainbow gradient
-local RunService = game:GetService("RunService")
-
-RunService.RenderStepped:Connect(function(deltaTime)
-    gradient.Rotation = (gradient.Rotation + 120 * deltaTime) % 360
-end)
-
--- Example text label inside the frame
-local label = Instance.new("TextLabel")
-label.Parent = frame
-label.Size = UDim2.new(1, -20, 0, 40)
-label.Position = UDim2.new(0, 10, 0, 10)
-label.BackgroundTransparency = 1
-label.TextColor3 = Cor_Text
-label.Font = Text_Font
-label.TextSize = 24
-label.Text = "Rainbow border!"
-label.TextStrokeColor3 = Cor_DarkText
-label.TextStrokeTransparency = 0.5
-
--- Rounded corners for the label
-local labelCorner = Instance.new("UICorner")
-labelCorner.CornerRadius = UDim.new(0, 6)
-labelCorner.Parent = label
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 local function Create(instance, parent, props)
   local new = Instance.new(instance, parent)
@@ -99,6 +45,24 @@ local function Stroke(parent, props)
   local new = Create("UIStroke", parent)
   new.Color = Configs_HUB.Cor_Stroke
   new.ApplyStrokeMode = "Border"
+  new.Thickness = 2
+  
+  local gradient = Instance.new("UIGradient")
+  gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 200)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 100, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 200))
+  }
+  gradient.Rotation = 0
+  gradient.Parent = new
+  
+  coroutine.wrap(function()
+    while new.Parent do
+      gradient.Rotation = (gradient.Rotation + 1) % 360
+      RunService.RenderStepped:Wait()
+    end
+  end)()
+  
   if props then
     SetProps(new, props)
   end
