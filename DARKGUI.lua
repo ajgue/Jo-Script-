@@ -724,7 +724,7 @@ function MakeWindow(Configs)
             while Container.Visible do
                 hue = (hue + 1) % 360
                 Stroke.Color = Color3.fromHSV(hue / 360, 1, 1)
-                task.wait(0.05)
+                task.wait(0.03)
             end
         end)
     end)
