@@ -1,7 +1,7 @@
 local Configs_HUB = { 
   Cor_Hub = Color3.fromRGB(0, 0, 0), 
   Cor_Options = Color3.fromRGB(0, 0, 0), 
-  Cor_Stroke = Color3.fromRGB(0, 0, 168),  -- لون بنفسجي
+  Cor_Stroke = Color3.fromRGB(0, 0, 168),  
   Cor_Text = Color3.fromRGB(0, 0, 168), 
   Cor_DarkText = Color3.fromRGB(0, 0, 168), 
   Corner_Radius = UDim.new(0, 10.10), 
@@ -610,12 +610,24 @@ function MakeWindow(Configs)
     local TabName = Configs.Name or "Tab"
     local TabTitle = Configs.TabTitle or false
     local TabImage = Configs.Image or nil
-    
+
     local Frame = Create("Frame", ScrollBar, {
         Size = UDim2.new(1, 0, 0, 25),
         BackgroundTransparency = 1
-    }) Corner(Frame) Stroke(Frame)
-    
+    })
+
+    -- زوايا دائرية
+    Create("UICorner", Frame, {
+        CornerRadius = UDim.new(0, 12)
+    })
+
+    -- حواف قوس قزح
+    local Stroke = Create("UIStroke", Frame, {
+        Thickness = 2,
+        Color = Color3.fromRGB(255, 0, 0),
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    })
+
     local TextButton = Create("TextButton", Frame, {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
@@ -644,7 +656,7 @@ function MakeWindow(Configs)
         Text = TabName,
         TextXAlignment = Enum.TextXAlignment.Left
     })
-    
+
     local Container = Create("ScrollingFrame", Containers, {
         Size = UDim2.new(1, 0, 1, 0),
         ScrollingDirection = "Y",
@@ -653,19 +665,19 @@ function MakeWindow(Configs)
         BackgroundTransparency = 1,
         ScrollBarThickness = 2,
         Visible = firstVisible
-    }) 
-    
+    })
+
     Create("UIPadding", Container, {
         PaddingLeft = UDim.new(0, 10),
         PaddingRight = UDim.new(0, 10),
         PaddingTop = UDim.new(0, 10),
         PaddingBottom = UDim.new(0, 10)
-    }) 
-    
+    })
+
     Create("UIListLayout", Container, {
         Padding = UDim.new(0, 5)
     })
-    
+
     if TabTitle then
         Create("TextLabel", Container, {
             BackgroundTransparency = 1,
@@ -679,31 +691,49 @@ function MakeWindow(Configs)
             Name = "Frame"
         })
     end
+
     
+    
+    local ClickSound = Instance.new("Sound", Frame)
+    ClickSound.SoundId = "rbxassetid://12222005" 
+    ClickSound.Volume = 1
+
     TextButton.MouseButton1Click:Connect(function()
+        ClickSound:Play()
+
         for _, container in pairs(Containers:GetChildren()) do
             if container:IsA("ScrollingFrame") then
                 container.Visible = false
             end
         end
-        
+
         for _, frame in pairs(ScrollBar:GetChildren()) do
             if frame:IsA("Frame") and frame:FindFirstChild("TextLabel") and frame.TextLabel ~= TextLabel then
                 CreateTween(frame.TextLabel, "TextColor3", Configs_HUB.Cor_DarkText, 0.3, false)
                 frame.TextLabel.TextSize = 14
             end
         end
-        
+
         Container.Visible = true
         CreateTween(TextLabel, "TextColor3", Configs_HUB.Cor_Text, 0.3, false)
         TextLabel.TextSize = 15
+
+
+        task.spawn(function()
+            local hue = 0
+            while Container.Visible do
+                hue = (hue + 1) % 360
+                Stroke.Color = Color3.fromHSV(hue / 360, 1, 1)
+                task.wait(0.05)
+            end
+        end)
     end)
-    
+
     firstVisible = false
     FirstTab = false
     textsize = 14
     textcolor = Configs_HUB.Cor_DarkText
-    
+
     return Container
 end
 
@@ -742,7 +772,7 @@ end
     TextButton.MouseButton1Click:Connect(function()
         
         local clickSound = Instance.new("Sound", TextButton)
-        clickSound.SoundId = "rbxassetid://9108676586" 
+        clickSound.SoundId = "rbxassetid://12222005" 
         clickSound.Volume = 1 
         clickSound:Play()
 
@@ -763,7 +793,7 @@ end
     local Callback = Configs.Callback or function() end
 
     local Sound = Instance.new("Sound")
-    Sound.SoundId = "rbxassetid://9108676586"
+    Sound.SoundId = "rbxassetid://12222005"
     Sound.Volume = 1
     Sound.Name = "ClickSound"
     Sound.Parent = parent
