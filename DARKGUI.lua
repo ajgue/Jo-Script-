@@ -1409,16 +1409,23 @@ end
     })Create("UIListLayout", ScrollBar, {
       Padding = UDim.new(0, 5)
     })
-    function AddColorDropdown(parent, Configs)
-    local DropdownName = Configs.Name or "Choose Color"
-    local Options = Configs.Options or {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+    function AddColorMenuDropdown(parent, Configs)
+    local DropdownName = Configs.Name or "تغيير اللون"
+    local Options = Configs.Options or {
+        Color3.fromRGB(255, 0, 0),
+        Color3.fromRGB(255, 127, 0),
+        Color3.fromRGB(255, 255, 0),
+        Color3.fromRGB(0, 255, 0),
+        Color3.fromRGB(0, 255, 255),
+        Color3.fromRGB(0, 0, 255),
+        Color3.fromRGB(139, 0, 255)
+    }
     local Default = Configs.Default or Options[1]
     local Callback = Configs.Callback or function() end
 
     local Frame = Create("TextButton", parent, {
         Size = UDim2.new(1, 0, 0, 25),
         BackgroundColor3 = Configs_HUB.Cor_Options,
-        Name = "Frame",
         Text = "",
         AutoButtonColor = false
     }) Corner(Frame) Stroke(Frame)
@@ -1467,6 +1474,7 @@ end
         PaddingTop = UDim.new(0, 10),
         PaddingBottom = UDim.new(0, 10)
     })
+
     Create("UIListLayout", ScrollBar, {
         Padding = UDim.new(0, 5)
     })
@@ -1494,7 +1502,7 @@ end
         end)
     end
 end
-    
+
     local function AddOption(OptionName)
       local TextButton = Create("TextButton", ScrollBar, {
         Size = UDim2.new(1, 0, 0, 15),
