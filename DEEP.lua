@@ -1615,38 +1615,33 @@ function redzlib:MakeWindow(Configs)
 		MainFrame.Visible = not MainFrame.Visible
 	end
 	function Window:AddMinimizeButton(Configs)
-	local Button = MakeDrag(Create("ImageButton", ScreenGui, {
-		Size = UDim2.fromOffset(35, 35),
-		Position = UDim2.fromScale(0.15, 0.15),
-		BackgroundTransparency = 0, 
-		BackgroundColor3 = Theme["Color Hub 2"],
-		AutoButtonColor = false
-	}))
-	
-	local Stroke = Make("UIStroke", Button)
-	Stroke.Color = Color3.fromRGB(0, 0, 0) 
-	Stroke.Thickness = 2
-
-	local Corner = Make("UICorner", Button)
-	Corner.CornerRadius = UDim.new(0, 2) 
-
-	
-	if Configs.Corner then
-		SetProps(Corner, Configs.Corner)
+		local Button = MakeDrag(Create("ImageButton", ScreenGui, {
+			Size = UDim2.fromOffset(35, 35),
+			Position = UDim2.fromScale(0.15, 0.15),
+			BackgroundTransparency = 1,
+			BackgroundColor3 = Theme["Color Hub 2"],
+			AutoButtonColor = false
+		}))
+		
+		local Stroke, Corner
+		if Configs.Corner then
+			Corner = Make("Corner", Button)
+			SetProps(Corner, Configs.Corner)
+		end
+		if Configs.Stroke then
+			Stroke = Make("Stroke", Button)
+			SetProps(Stroke, Configs.Corner)
+		end
+		
+		SetProps(Button, Configs.Button)
+		Button.Activated:Connect(Window.Minimize)
+		
+		return {
+			Stroke = Stroke,
+			Corner = Corner,
+			Button = Button
+		}
 	end
-	if Configs.Stroke then
-		SetProps(Stroke, Configs.Stroke)
-	end
-	
-	SetProps(Button, Configs.Button)
-	Button.Activated:Connect(Window.Minimize)
-	
-	return {
-		Stroke = Stroke,
-		Corner = Corner,
-		Button = Button
-	}
-end
 	function Window:Set(Val1, Val2)
 		if type(Val1) == "string" and type(Val2) == "string" then
 			Title.Text = Val1
@@ -1773,76 +1768,102 @@ end
 	
 	local ContainerList = {}
 	function Window:MakeTab(paste, Configs)
-		if type(paste) == "table" then Configs = paste end
-		local TName = Configs[1] or Configs.Title or "Tab!"
-		local TIcon = Configs[2] or Configs.Icon or ""
-		
-		TIcon = redzlib:GetIcon(TIcon)
-		if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
-			TIcon = false
+	if type(paste) == "table" then Configs = paste end
+	local TName = Configs[1] or Configs.Title or "Tab!"
+	local TIcon = Configs[2] or Configs.Icon or ""
+
+	TIcon = redzlib:GetIcon(TIcon)
+	if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
+		TIcon = false
+	end
+
+	local TabSelect = Make("Button", MainScroll, {
+		Size = UDim2.new(1, 0, 0, 28),
+		BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+		AutoButtonColor = false
+	})
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 8)
+	Corner.Parent = TabSelect
+
+	local Stroke = Instance.new("UIStroke")
+	Stroke.Thickness = 2
+	Stroke.Parent = TabSelect
+
+	task.spawn(function()
+		while TabSelect and TabSelect.Parent do
+			for hue = 0, 1, 0.01 do
+				Stroke.Color = Color3.fromHSV(hue, 1, 1)
+				task.wait(0.03)
+			end
 		end
-		
-		local TabSelect = Make("Button", MainScroll, {
-			Size = UDim2.new(1, 0, 0, 24)
-		})Make("Corner", TabSelect)
-		
-		local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
-			Size = UDim2.new(1, TIcon and -25 or -15, 1),
-			Position = UDim2.fromOffset(TIcon and 25 or 15),
-			BackgroundTransparency = 1,
-			Font = Enum.Font.GothamMedium,
-			Text = TName,
-			TextColor3 = Theme["Color Text"],
-			TextSize = 10,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextTransparency = (FirstTab and 0.3) or 0,
-			TextTruncate = "AtEnd"
-		}), "Text")
-		
-		local LabelIcon = InsertTheme(Create("ImageLabel", TabSelect, {
-			Position = UDim2.new(0, 8, 0.5),
-			Size = UDim2.new(0, 13, 0, 13),
-			AnchorPoint = Vector2.new(0, 0.5),
-			Image = TIcon or "",
-			BackgroundTransparency = 1,
-			ImageTransparency = (FirstTab and 0.3) or 0
-		}), "Text")
-		
-		local Selected = InsertTheme(Create("Frame", TabSelect, {
-			Size = FirstTab and UDim2.new(0, 4, 0, 4) or UDim2.new(0, 4, 0, 13),
-			Position = UDim2.new(0, 1, 0.5),
-			AnchorPoint = Vector2.new(0, 0.5),
-			BackgroundColor3 = Theme["Color Theme"],
-			BackgroundTransparency = FirstTab and 1 or 0
-		}), "Theme")Make("Corner", Selected, UDim.new(0.5, 0))
-		
-		local Container = InsertTheme(Create("ScrollingFrame", {
-			Size = UDim2.new(1, 0, 1, 0),
-			Position = UDim2.new(0, 0, 1),
-			AnchorPoint = Vector2.new(0, 1),
-			ScrollBarThickness = 1.5,
-			BackgroundTransparency = 1,
-			ScrollBarImageTransparency = 0.2,
-			ScrollBarImageColor3 = Theme["Color Theme"],
-			AutomaticCanvasSize = "Y",
-			ScrollingDirection = "Y",
-			BorderSizePixel = 0,
-			CanvasSize = UDim2.new(),
-			Name = ("Container %i [ %s ]"):format(#ContainerList + 1, TName)
-		}, {
-			Create("UIPadding", {
-				PaddingLeft = UDim.new(0, 10),
-				PaddingRight = UDim.new(0, 10),
-				PaddingTop = UDim.new(0, 10),
-				PaddingBottom = UDim.new(0, 10)
-			}), Create("UIListLayout", {
-				Padding = UDim.new(0, 5)
-			})
-		}), "ScrollBar")
-		
-		table.insert(ContainerList, Container)
-		
-		if not FirstTab then Container.Parent = Containers end
+	end)
+
+	local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
+		Size = UDim2.new(1, TIcon and -25 or -15, 1),
+		Position = UDim2.fromOffset(TIcon and 25 or 15),
+		BackgroundTransparency = 1,
+		Font = Enum.Font.GothamMedium,
+		Text = TName,
+		TextColor3 = Theme["Color Text"],
+		TextSize = 10,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextTransparency = (FirstTab and 0.3) or 0,
+		TextTruncate = "AtEnd"
+	}), "Text")
+
+	local LabelIcon = InsertTheme(Create("ImageLabel", TabSelect, {
+		Position = UDim2.new(0, 8, 0.5),
+		Size = UDim2.new(0, 13, 0, 13),
+		AnchorPoint = Vector2.new(0, 0.5),
+		Image = TIcon or "",
+		BackgroundTransparency = 1,
+		ImageTransparency = (FirstTab and 0.3) or 0
+	}), "Text")
+
+	local Selected = InsertTheme(Create("Frame", TabSelect, {
+		Size = FirstTab and UDim2.new(0, 4, 0, 4) or UDim2.new(0, 4, 0, 13),
+		Position = UDim2.new(0, 1, 0.5),
+		AnchorPoint = Vector2.new(0, 0.5),
+		BackgroundColor3 = Theme["Color Theme"],
+		BackgroundTransparency = FirstTab and 1 or 0
+	}), "Theme")
+
+	local SelectedCorner = Instance.new("UICorner")
+	SelectedCorner.CornerRadius = UDim.new(0.5, 0)
+	SelectedCorner.Parent = Selected
+
+	local Container = InsertTheme(Create("ScrollingFrame", {
+		Size = UDim2.new(1, 0, 1, 0),
+		Position = UDim2.new(0, 0, 1),
+		AnchorPoint = Vector2.new(0, 1),
+		ScrollBarThickness = 1.5,
+		BackgroundTransparency = 1,
+		ScrollBarImageTransparency = 0.2,
+		ScrollBarImageColor3 = Theme["Color Theme"],
+		AutomaticCanvasSize = "Y",
+		ScrollingDirection = "Y",
+		BorderSizePixel = 0,
+		CanvasSize = UDim2.new(),
+		Name = ("Container %i [ %s ]"):format(#ContainerList + 1, TName)
+	}, {
+		Create("UIPadding", {
+			PaddingLeft = UDim.new(0, 10),
+			PaddingRight = UDim.new(0, 10),
+			PaddingTop = UDim.new(0, 10),
+			PaddingBottom = UDim.new(0, 10)
+		}),
+		Create("UIListLayout", {
+			Padding = UDim.new(0, 5)
+		})
+	}), "ScrollBar")
+
+	table.insert(ContainerList, Container)
+
+	if not FirstTab then
+		Container.Parent = Containers end
+
 		
 		local function Tabs()
 			if Container.Parent then return end
