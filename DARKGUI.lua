@@ -5,7 +5,17 @@ local Configs_HUB = {
   Cor_Text = Color3.fromRGB(240, 240, 240), 
   Cor_DarkText = Color3.fromRGB(240, 240, 240), 
   Corner_Radius = UDim.new(0, 15), 
-  Text_Font = Enum.Font.FredokaOne 
+  Text_Font = Enum.Font.FredokaOne,
+
+  Text_Colors = {
+    Color3.fromRGB(255, 0, 0),   
+    Color3.fromRGB(255, 128, 0),   
+    Color3.fromRGB(255, 255, 0),   
+    Color3.fromRGB(0, 255, 0),     
+    Color3.fromRGB(0, 255, 255),   
+    Color3.fromRGB(0, 0, 255),     
+    Color3.fromRGB(128, 0, 255)   
+  }
 }
 
 local CoreGui = game:GetService("CoreGui")
@@ -1659,68 +1669,7 @@ end
     Section.Text = NewName
   end
   
-  function AddColorDropdown(parent, targetFrame, Configs)
-    local name = Configs.Name or "Color Dropdown"
-    local defaultColor = Configs.Default or Color3.fromRGB(255, 255, 0)
-    local callback = Configs.Callback or function() end
-    local colors = Configs.Colors or {}
-
-    local main = Instance.new("Frame")
-    main.Size = UDim2.new(1, 0, 0, 30)
-    main.BackgroundTransparency = 1
-    main.Parent = parent
-
-    local label = Instance.new("TextLabel")
-    label.Text = name
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.BackgroundTransparency = 1
-    label.Size = UDim2.new(1, 0, 0, 30)
-    label.Font = Enum.Font.SourceSans
-    label.TextSize = 20
-    label.Parent = main
-
-    local dropdown = Instance.new("Frame")
-    dropdown.Size = UDim2.new(1, 0, 0, 0)
-    dropdown.BackgroundTransparency = 1
-    dropdown.ClipsDescendants = true
-    dropdown.Position = UDim2.new(0, 0, 0, 30)
-    dropdown.Parent = main
-
-    local layout = Instance.new("UIListLayout")
-    layout.Parent = dropdown
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-
-    local open = false
-
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, 0, 0, 30)
-    button.BackgroundColor3 = defaultColor
-    button.Text = "اختر اللون"
-    button.TextColor3 = Color3.fromRGB(0, 0, 0)
-    button.Parent = main
-
-    button.MouseButton1Click:Connect(function()
-        open = not open
-        local targetSize = open and (#colors * 28) or 0
-
-        dropdown:TweenSize(UDim2.new(1, 0, 0, targetSize), "Out", "Sine", 0.25, true)
-        main:TweenSize(UDim2.new(1, 0, 0, open and (30 + targetSize) or 30), "Out", "Sine", 0.25, true)
-    end)
-
-    for _, item in pairs(colors) do
-        local colorButton = Instance.new("TextButton")
-        colorButton.Size = UDim2.new(1, 0, 0, 28)
-        colorButton.Text = item.Name
-        colorButton.BackgroundColor3 = item.Color
-        colorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        colorButton.Parent = dropdown
-
-        colorButton.MouseButton1Click:Connect(function()
-            button.BackgroundColor3 = item.Color
-            callback(item.Color)
-        end)
-    end
-end
+  
   
   function AddDiscord(parent, Configs)
     local DiscordLink = Configs[1] or Configs.DiscordLink or "https://discord.gg/"
