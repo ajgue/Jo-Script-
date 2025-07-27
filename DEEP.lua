@@ -48,13 +48,13 @@ local redzlib = {
 		}
 	},
 	Info = {
-		Version = "1.1.0"
-	},
-	Save = {
-		UISize = {550, 380},
-		TabSize = 160,
-		Theme = "Darker"
-	},
+    Version = "1.1.0"
+},
+Save = {
+    UISize = {420, 300},
+    TabSize = 140,
+    Theme = "Darker"
+},
 	Settings = {},
 	Connection = {},
 	Instances = {},
@@ -1768,102 +1768,76 @@ function redzlib:MakeWindow(Configs)
 	
 	local ContainerList = {}
 	function Window:MakeTab(paste, Configs)
-	if type(paste) == "table" then Configs = paste end
-	local TName = Configs[1] or Configs.Title or "Tab!"
-	local TIcon = Configs[2] or Configs.Icon or ""
-
-	TIcon = redzlib:GetIcon(TIcon)
-	if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
-		TIcon = false
-	end
-
-	local TabSelect = Make("Button", MainScroll, {
-		Size = UDim2.new(1, 0, 0, 28),
-		BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-		AutoButtonColor = false
-	})
-
-	local Corner = Instance.new("UICorner")
-	Corner.CornerRadius = UDim.new(0, 8)
-	Corner.Parent = TabSelect
-
-	local Stroke = Instance.new("UIStroke")
-	Stroke.Thickness = 2
-	Stroke.Parent = TabSelect
-
-	task.spawn(function()
-		while TabSelect and TabSelect.Parent do
-			for hue = 0, 1, 0.01 do
-				Stroke.Color = Color3.fromHSV(hue, 1, 1)
-				task.wait(0.03)
-			end
+		if type(paste) == "table" then Configs = paste end
+		local TName = Configs[1] or Configs.Title or "Tab!"
+		local TIcon = Configs[2] or Configs.Icon or ""
+		
+		TIcon = redzlib:GetIcon(TIcon)
+		if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
+			TIcon = false
 		end
-	end)
-
-	local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
-		Size = UDim2.new(1, TIcon and -25 or -15, 1),
-		Position = UDim2.fromOffset(TIcon and 25 or 15),
-		BackgroundTransparency = 1,
-		Font = Enum.Font.GothamMedium,
-		Text = TName,
-		TextColor3 = Theme["Color Text"],
-		TextSize = 10,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		TextTransparency = (FirstTab and 0.3) or 0,
-		TextTruncate = "AtEnd"
-	}), "Text")
-
-	local LabelIcon = InsertTheme(Create("ImageLabel", TabSelect, {
-		Position = UDim2.new(0, 8, 0.5),
-		Size = UDim2.new(0, 13, 0, 13),
-		AnchorPoint = Vector2.new(0, 0.5),
-		Image = TIcon or "",
-		BackgroundTransparency = 1,
-		ImageTransparency = (FirstTab and 0.3) or 0
-	}), "Text")
-
-	local Selected = InsertTheme(Create("Frame", TabSelect, {
-		Size = FirstTab and UDim2.new(0, 4, 0, 4) or UDim2.new(0, 4, 0, 13),
-		Position = UDim2.new(0, 1, 0.5),
-		AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundColor3 = Theme["Color Theme"],
-		BackgroundTransparency = FirstTab and 1 or 0
-	}), "Theme")
-
-	local SelectedCorner = Instance.new("UICorner")
-	SelectedCorner.CornerRadius = UDim.new(0.5, 0)
-	SelectedCorner.Parent = Selected
-
-	local Container = InsertTheme(Create("ScrollingFrame", {
-		Size = UDim2.new(1, 0, 1, 0),
-		Position = UDim2.new(0, 0, 1),
-		AnchorPoint = Vector2.new(0, 1),
-		ScrollBarThickness = 1.5,
-		BackgroundTransparency = 1,
-		ScrollBarImageTransparency = 0.2,
-		ScrollBarImageColor3 = Theme["Color Theme"],
-		AutomaticCanvasSize = "Y",
-		ScrollingDirection = "Y",
-		BorderSizePixel = 0,
-		CanvasSize = UDim2.new(),
-		Name = ("Container %i [ %s ]"):format(#ContainerList + 1, TName)
-	}, {
-		Create("UIPadding", {
-			PaddingLeft = UDim.new(0, 10),
-			PaddingRight = UDim.new(0, 10),
-			PaddingTop = UDim.new(0, 10),
-			PaddingBottom = UDim.new(0, 10)
-		}),
-		Create("UIListLayout", {
-			Padding = UDim.new(0, 5)
-		})
-	}), "ScrollBar")
-
-	table.insert(ContainerList, Container)
-
-	if not FirstTab then
-		Container.Parent = Containers end
-
+		
+		local TabSelect = Make("Button", MainScroll, {
+			Size = UDim2.new(1, 0, 0, 24)
+		})Make("Corner", TabSelect)
+		
+		local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
+			Size = UDim2.new(1, TIcon and -25 or -15, 1),
+			Position = UDim2.fromOffset(TIcon and 25 or 15),
+			BackgroundTransparency = 1,
+			Font = Enum.Font.GothamMedium,
+			Text = TName,
+			TextColor3 = Theme["Color Text"],
+			TextSize = 10,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextTransparency = (FirstTab and 0.3) or 0,
+			TextTruncate = "AtEnd"
+		}), "Text")
+		
+		local LabelIcon = InsertTheme(Create("ImageLabel", TabSelect, {
+			Position = UDim2.new(0, 8, 0.5),
+			Size = UDim2.new(0, 13, 0, 13),
+			AnchorPoint = Vector2.new(0, 0.5),
+			Image = TIcon or "",
+			BackgroundTransparency = 1,
+			ImageTransparency = (FirstTab and 0.3) or 0
+		}), "Text")
+		
+		local Selected = InsertTheme(Create("Frame", TabSelect, {
+			Size = FirstTab and UDim2.new(0, 4, 0, 4) or UDim2.new(0, 4, 0, 13),
+			Position = UDim2.new(0, 1, 0.5),
+			AnchorPoint = Vector2.new(0, 0.5),
+			BackgroundColor3 = Theme["Color Theme"],
+			BackgroundTransparency = FirstTab and 1 or 0
+		}), "Theme")Make("Corner", Selected, UDim.new(0.5, 0))
+		
+		local Container = InsertTheme(Create("ScrollingFrame", {
+			Size = UDim2.new(1, 0, 1, 0),
+			Position = UDim2.new(0, 0, 1),
+			AnchorPoint = Vector2.new(0, 1),
+			ScrollBarThickness = 1.5,
+			BackgroundTransparency = 1,
+			ScrollBarImageTransparency = 0.2,
+			ScrollBarImageColor3 = Theme["Color Theme"],
+			AutomaticCanvasSize = "Y",
+			ScrollingDirection = "Y",
+			BorderSizePixel = 0,
+			CanvasSize = UDim2.new(),
+			Name = ("Container %i [ %s ]"):format(#ContainerList + 1, TName)
+		}, {
+			Create("UIPadding", {
+				PaddingLeft = UDim.new(0, 10),
+				PaddingRight = UDim.new(0, 10),
+				PaddingTop = UDim.new(0, 10),
+				PaddingBottom = UDim.new(0, 10)
+			}), Create("UIListLayout", {
+				Padding = UDim.new(0, 5)
+			})
+		}), "ScrollBar")
+		
+		table.insert(ContainerList, Container)
+		
+		if not FirstTab then Container.Parent = Containers end
 		
 		local function Tabs()
 			if Container.Parent then return end
@@ -1971,173 +1945,115 @@ function redzlib:MakeWindow(Configs)
 			return Paragraph
 		end
 		function Tab:AddButton(Configs)
-	local BName = Configs[1] or Configs.Name or Configs.Title or "Button!"
-	local BDescription = Configs.Desc or Configs.Description or ""
-	local Callback = Funcs:GetCallback(Configs, 2)
-
-	local FButton, LabelFunc = ButtonFrame(Container, BName, BDescription, UDim2.new(1, -20))
-
-	-- 🌈 قوس قزح متحرك
-	local UIGradient = Instance.new("UIGradient", FButton)
-	UIGradient.Color = ColorSequence.new{
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-		ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 0)),
-		ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0, 255, 0)),
-		ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 255, 255)),
-		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0, 0, 255)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
-	}
-	UIGradient.Rotation = 0
-
-	-- تحريك التدرج باستمرار
-	task.spawn(function()
-		while FButton.Parent do
-			UIGradient.Rotation += 1
-			if UIGradient.Rotation >= 360 then
-				UIGradient.Rotation = 0
+			local BName = Configs[1] or Configs.Name or Configs.Title or "Button!"
+			local BDescription = Configs.Desc or Configs.Description or ""
+			local Callback = Funcs:GetCallback(Configs, 2)
+			
+			local FButton, LabelFunc = ButtonFrame(Container, BName, BDescription, UDim2.new(1, -20))
+			
+			local ButtonIcon = Create("ImageLabel", FButton, {
+				Size = UDim2.new(0, 14, 0, 14),
+				Position = UDim2.new(1, -10, 0.5),
+				AnchorPoint = Vector2.new(1, 0.5),
+				BackgroundTransparency = 1,
+				Image = "rbxassetid://10709791437"
+			})
+			
+			FButton.Activated:Connect(function()
+				Funcs:FireCallback(Callback)
+			end)
+			
+			local Button = {}
+			function Button:Visible(...) Funcs:ToggleVisible(FButton, ...) end
+			function Button:Destroy() FButton:Destroy() end
+			function Button:Callback(...) Funcs:InsertCallback(Callback, ...) end
+			function Button:Set(Val1, Val2)
+				if type(Val1) == "string" and type(Val2) == "string" then
+					LabelFunc:SetTitle(Val1)
+					LabelFunc:SetDesc(Val2)
+				elseif type(Val1) == "string" then
+					LabelFunc:SetTitle(Val1)
+				elseif type(Val1) == "function" then
+					Callback = Val1
+				end
 			end
-			task.wait(0.03)
+			return Button
 		end
-	end)
-
-	-- 🌟 حواف شبه دائرية
-	Make("Corner", FButton, UDim.new(0, 12))
-
-	-- ✅ أيقونة مخصصة
-	local ButtonIcon = Create("ImageLabel", FButton, {
-		Size = UDim2.new(0, 18, 0, 18),
-		Position = UDim2.new(1, -10, 0.5, 0),
-		AnchorPoint = Vector2.new(1, 0.5),
-		BackgroundTransparency = 1,
-		Image = "rbxassetid://99956220697276"
-	})
-	Make("Corner", ButtonIcon, UDim.new(1, 0))
-	Make("Stroke", ButtonIcon)
-
-	-- عند الضغط على الزر
-	FButton.Activated:Connect(function()
-		Funcs:FireCallback(Callback)
-	end)
-
-	-- كائن الزر وإجراءاته
-	local Button = {}
-	function Button:Visible(...) Funcs:ToggleVisible(FButton, ...) end
-	function Button:Destroy() FButton:Destroy() end
-	function Button:Callback(...) Funcs:InsertCallback(Callback, ...) end
-	function Button:Set(Val1, Val2)
-		if type(Val1) == "string" and type(Val2) == "string" then
-			LabelFunc:SetTitle(Val1)
-			LabelFunc:SetDesc(Val2)
-		elseif type(Val1) == "string" then
-			LabelFunc:SetTitle(Val1)
-		elseif type(Val1) == "function" then
-			Callback = Val1
-		end
-	end
-
-	return Button
-end
 		function Tab:AddToggle(Configs)
-	local TName = Configs[1] or Configs.Name or Configs.Title or "Toggle"
-	local TDesc = Configs.Desc or Configs.Description or ""
-	local Callback = Funcs:GetCallback(Configs, 3)
-	local Flag = Configs[4] or Configs.Flag or false
-	local Default = Configs[2] or Configs.Default or false
-	if CheckFlag(Flag) then Default = GetFlag(Flag) end
-
-	local Button, LabelFunc = ButtonFrame(Container, TName, TDesc, UDim2.new(1, -38))
-
-	-- ✅ Toggle Holder (خلفية الزر)
-	local ToggleHolder = Create("Frame", Button, {
-		Size = UDim2.new(0, 38, 0, 18),
-		Position = UDim2.new(1, -10, 0.5, 0),
-		AnchorPoint = Vector2.new(1, 0.5),
-		BackgroundColor3 = Color3.fromRGB(40, 40, 40),
-		ClipsDescendants = true
-	})
-	Make("Corner", ToggleHolder, UDim.new(0.5, 0))
-	Make("Stroke", ToggleHolder)
-
-	-- ✅ دائرة التبديل (Toggle Dot)
-	local Toggle = Create("Frame", ToggleHolder, {
-		Size = UDim2.new(0, 14, 0, 14),
-		Position = UDim2.new(0, 2, 0.5, 0),
-		AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-	})
-	Make("Corner", Toggle, UDim.new(0.5, 0))
-
-	-- 🌈 UIGradient داخل دائرة التبديل
-	local Rainbow = Instance.new("UIGradient", Toggle)
-	Rainbow.Color = ColorSequence.new{
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-		ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 0)),
-		ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0, 255, 0)),
-		ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 255, 255)),
-		ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0, 0, 255)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255)),
-	}
-	Rainbow.Rotation = 0
-
-	-- تدوير مستمر
-	task.spawn(function()
-		while Toggle.Parent do
-			Rainbow.Rotation += 1
-			if Rainbow.Rotation >= 360 then Rainbow.Rotation = 0 end
-			task.wait(0.03)
-		end
-	end)
-
-	-- ✅ وظيفة التبديل
-	local WaitClick
-	local function SetToggle(Val)
-		if WaitClick then return end
-
-		WaitClick, Default = true, Val
-		SetFlag(Flag, Default)
-		Funcs:FireCallback(Callback, Default)
-
-		if Default then
-			CreateTween({Toggle, "Position", UDim2.new(1, -16, 0.5), 0.25})
-			CreateTween({Toggle, "BackgroundTransparency", 0, 0.25})
-			CreateTween({Toggle, "AnchorPoint", Vector2.new(0, 0.5), 0.25})
-		else
-			CreateTween({Toggle, "Position", UDim2.new(0, 2, 0.5), 0.25})
-			CreateTween({Toggle, "BackgroundTransparency", 0.3, 0.25})
-			CreateTween({Toggle, "AnchorPoint", Vector2.new(0, 0.5), 0.25})
-		end
-
-		WaitClick = false
-	end
-
-	task.spawn(SetToggle, Default)
-
-	Button.Activated:Connect(function()
-		SetToggle(not Default)
-	end)
-
-	local ToggleObject = {}
-	function ToggleObject:Visible(...) Funcs:ToggleVisible(Button, ...) end
-	function ToggleObject:Destroy() Button:Destroy() end
-	function ToggleObject:Callback(...) Funcs:InsertCallback(Callback, ...)() end
-	function ToggleObject:Set(Val1, Val2)
-		if type(Val1) == "string" and type(Val2) == "string" then
-			LabelFunc:SetTitle(Val1)
-			LabelFunc:SetDesc(Val2)
-		elseif type(Val1) == "string" then
-			LabelFunc:SetTitle(Val1, false, true)
-		elseif type(Val1) == "boolean" then
-			if WaitClick and Val2 then
-				repeat task.wait() until not WaitClick
+			local TName = Configs[1] or Configs.Name or Configs.Title or "Toggle"
+			local TDesc = Configs.Desc or Configs.Description or ""
+			local Callback = Funcs:GetCallback(Configs, 3)
+			local Flag = Configs[4] or Configs.Flag or false
+			local Default = Configs[2] or Configs.Default or false
+			if CheckFlag(Flag) then Default = GetFlag(Flag) end
+			
+			local Button, LabelFunc = ButtonFrame(Container, TName, TDesc, UDim2.new(1, -38))
+			
+			local ToggleHolder = InsertTheme(Create("Frame", Button, {
+				Size = UDim2.new(0, 35, 0, 18),
+				Position = UDim2.new(1, -10, 0.5),
+				AnchorPoint = Vector2.new(1, 0.5),
+				BackgroundColor3 = Theme["Color Stroke"]
+			}), "Stroke")Make("Corner", ToggleHolder, UDim.new(0.5, 0))
+			
+			local Slider = Create("Frame", ToggleHolder, {
+				BackgroundTransparency = 1,
+				Size = UDim2.new(0.8, 0, 0.8, 0),
+				Position = UDim2.new(0.5, 0, 0.5, 0),
+				AnchorPoint = Vector2.new(0.5, 0.5)
+			})
+			
+			local Toggle = InsertTheme(Create("Frame", Slider, {
+				Size = UDim2.new(0, 12, 0, 12),
+				Position = UDim2.new(0, 0, 0.5),
+				AnchorPoint = Vector2.new(0, 0.5),
+				BackgroundColor3 = Theme["Color Theme"]
+			}), "Theme")Make("Corner", Toggle, UDim.new(0.5, 0))
+			
+			local WaitClick
+			local function SetToggle(Val)
+				if WaitClick then return end
+				
+				WaitClick, Default = true, Val
+				SetFlag(Flag, Default)
+				Funcs:FireCallback(Callback, Default)
+				if Default then
+					CreateTween({Toggle, "Position", UDim2.new(1, 0, 0.5), 0.25})
+					CreateTween({Toggle, "BackgroundTransparency", 0, 0.25})
+					CreateTween({Toggle, "AnchorPoint", Vector2.new(1, 0.5), 0.25, Wait or false})
+				else
+					CreateTween({Toggle, "Position", UDim2.new(0, 0, 0.5), 0.25})
+					CreateTween({Toggle, "BackgroundTransparency", 0.8, 0.25})
+					CreateTween({Toggle, "AnchorPoint", Vector2.new(0, 0.5), 0.25, Wait or false})
+				end
+				WaitClick = false
+			end;task.spawn(SetToggle, Default)
+			
+			Button.Activated:Connect(function()
+				SetToggle(not Default)
+			end)
+			
+			local Toggle = {}
+			function Toggle:Visible(...) Funcs:ToggleVisible(Button, ...) end
+			function Toggle:Destroy() Button:Destroy() end
+			function Toggle:Callback(...) Funcs:InsertCallback(Callback, ...)() end
+			function Toggle:Set(Val1, Val2)
+				if type(Val1) == "string" and type(Val2) == "string" then
+					LabelFunc:SetTitle(Val1)
+					LabelFunc:SetDesc(Val2)
+				elseif type(Val1) == "string" then
+					LabelFunc:SetTitle(Val1, false, true)
+				elseif type(Val1) == "boolean" then
+					if WaitClick and Val2 then
+						repeat task.wait() until not WaitClick
+					end
+					task.spawn(SetToggle, Val1)
+				elseif type(Val1) == "function" then
+					Callback = Val1
+				end
 			end
-			task.spawn(SetToggle, Val1)
-		elseif type(Val1) == "function" then
-			Callback = Val1
+			return Toggle
 		end
-	end
-
-	return Toggle
-end
 		function Tab:AddDropdown(Configs)
 			local DName = Configs[1] or Configs.Name or Configs.Title or "Dropdown"
 			local DDesc = Configs.Desc or Configs.Description or ""
@@ -2683,124 +2599,102 @@ end
 			return TextBox
 		end
 		function Tab:AddDiscordInvite(Configs)
-	local Title = Configs[1] or Configs.Name or Configs.Title or "Discord"
-	local Desc = Configs.Desc or Configs.Description or ""
-	local Logo = Configs[2] or Configs.Logo or ""
-	local Invite = Configs[3] or Configs.Invite or ""
-
-	local InviteHolder = Create("Frame", Container, {
-		Size = UDim2.new(1, 0, 0, 90),
-		Name = "Option",
-		BackgroundTransparency = 1
-	})
-
-	local InviteLabel = Create("TextLabel", InviteHolder, {
-		Size = UDim2.new(1, 0, 0, 15),
-		Position = UDim2.new(0, 5),
-		TextColor3 = Color3.fromRGB(40, 150, 255),
-		Font = Enum.Font.GothamBold,
-		TextXAlignment = "Left",
-		BackgroundTransparency = 1,
-		TextSize = 10,
-		Text = Invite
-	})
-
-	local FrameHolder = Create("Frame", InviteHolder, {
-		Size = UDim2.new(1, 0, 0, 70),
-		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.new(0, 0, 1, 0),
-		BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-		ClipsDescendants = true
-	})
-	Make("Corner", FrameHolder, UDim.new(0, 14)) -- شبه دائري
-
-	-- ⚙️ خلفية متحركة (Gradient)
-	local UIGradient = Instance.new("UIGradient", FrameHolder)
-	UIGradient.Color = ColorSequence.new{
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 85, 255)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 170))
-	}
-	UIGradient.Rotation = 0
-
-	-- تدوير متكرر
-	task.spawn(function()
-		while FrameHolder.Parent do
-			UIGradient.Rotation += 1
-			if UIGradient.Rotation >= 360 then UIGradient.Rotation = 0 end
-			task.wait(0.03)
+			local Title = Configs[1] or Configs.Name or Configs.Title or "Discord"
+			local Desc = Configs.Desc or Configs.Description or ""
+			local Logo = Configs[2] or Configs.Logo or ""
+			local Invite = Configs[3] or Configs.Invite or ""
+			
+			local InviteHolder = Create("Frame", Container, {
+				Size = UDim2.new(1, 0, 0, 80),
+				Name = "Option",
+				BackgroundTransparency = 1
+			})
+			
+			local InviteLabel = Create("TextLabel", InviteHolder, {
+				Size = UDim2.new(1, 0, 0, 15),
+				Position = UDim2.new(0, 5),
+				TextColor3 = Color3.fromRGB(40, 150, 255),
+				Font = Enum.Font.GothamBold,
+				TextXAlignment = "Left",
+				BackgroundTransparency = 1,
+				TextSize = 10,
+				Text = Invite
+			})
+			
+			local FrameHolder = InsertTheme(Create("Frame", InviteHolder, {
+				Size = UDim2.new(1, 0, 0, 65),
+				AnchorPoint = Vector2.new(0, 1),
+				Position = UDim2.new(0, 0, 1),
+				BackgroundColor3 = Theme["Color Hub 2"]
+			}), "Frame")Make("Corner", FrameHolder)
+			
+			local ImageLabel = Create("ImageLabel", FrameHolder, {
+				Size = UDim2.new(0, 30, 0, 30),
+				Position = UDim2.new(0, 7, 0, 7),
+				Image = Logo,
+				BackgroundTransparency = 1
+			})Make("Corner", ImageLabel, UDim.new(0, 4))Make("Stroke", ImageLabel)
+			
+			local LTitle = InsertTheme(Create("TextLabel", FrameHolder, {
+				Size = UDim2.new(1, -52, 0, 15),
+				Position = UDim2.new(0, 44, 0, 7),
+				Font = Enum.Font.GothamBold,
+				TextColor3 = Theme["Color Text"],
+				TextXAlignment = "Left",
+				BackgroundTransparency = 1,
+				TextSize = 10,
+				Text = Title
+			}), "Text")
+			
+			local LDesc = InsertTheme(Create("TextLabel", FrameHolder, {
+				Size = UDim2.new(1, -52, 0, 0),
+				Position = UDim2.new(0, 44, 0, 22),
+				TextWrapped = "Y",
+				AutomaticSize = "Y",
+				Font = Enum.Font.Gotham,
+				TextColor3 = Theme["Color Dark Text"],
+				TextXAlignment = "Left",
+				BackgroundTransparency = 1,
+				TextSize = 8,
+				Text = Desc
+			}), "DarkText")
+			
+			local JoinButton = Create("TextButton", FrameHolder, {
+				Size = UDim2.new(1, -14, 0, 16),
+				AnchorPoint = Vector2.new(0.5, 1),
+				Position = UDim2.new(0.5, 0, 1, -7),
+				Text = "Join",
+				Font = Enum.Font.GothamBold,
+				TextSize = 12,
+				TextColor3 = Color3.fromRGB(220, 220, 220),
+				BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+			})Make("Corner", JoinButton, UDim.new(0, 5))
+			
+			local ClickDelay
+			JoinButton.Activated:Connect(function()
+				setclipboard(Invite)
+				if ClickDelay then return end
+				
+				ClickDelay = true
+				SetProps(JoinButton, {
+					Text = "Copied to Clipboard",
+					BackgroundColor3 = Color3.fromRGB(100, 100, 100),
+					TextColor3 = Color3.fromRGB(150, 150, 150)
+				})task.wait(5)
+				SetProps(JoinButton, {
+					Text = "Join",
+					BackgroundColor3 = Color3.fromRGB(50, 150, 50),
+					TextColor3 = Color3.fromRGB(220, 220, 220)
+				})ClickDelay = false
+			end)
+			
+			local DiscordInvite = {}
+			function DiscordInvite:Destroy() InviteHolder:Destroy() end
+			function DiscordInvite:Visible(...) Funcs:ToggleVisible(InviteHolder, ...) end
+			return DiscordInvite
 		end
-	end)
-
-	local ImageLabel = Create("ImageLabel", FrameHolder, {
-		Size = UDim2.new(0, 32, 0, 32),
-		Position = UDim2.new(0, 8, 0, 8),
-		Image = Logo,
-		BackgroundTransparency = 1
-	})
-	Make("Corner", ImageLabel, UDim.new(1, 0))
-	Make("Stroke", ImageLabel)
-
-	local LTitle = Create("TextLabel", FrameHolder, {
-		Size = UDim2.new(1, -52, 0, 15),
-		Position = UDim2.new(0, 50, 0, 8),
-		Font = Enum.Font.GothamBold,
-		TextColor3 = Color3.fromRGB(255, 255, 255),
-		TextXAlignment = "Left",
-		BackgroundTransparency = 1,
-		TextSize = 11,
-		Text = Title
-	})
-
-	local LDesc = Create("TextLabel", FrameHolder, {
-		Size = UDim2.new(1, -52, 0, 0),
-		Position = UDim2.new(0, 50, 0, 24),
-		TextWrapped = true,
-		AutomaticSize = Enum.AutomaticSize.Y,
-		Font = Enum.Font.Gotham,
-		TextColor3 = Color3.fromRGB(220, 220, 220),
-		TextXAlignment = "Left",
-		BackgroundTransparency = 1,
-		TextSize = 9,
-		Text = Desc
-	})
-
-	local JoinButton = Create("TextButton", FrameHolder, {
-		Size = UDim2.new(1, -20, 0, 18),
-		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -6),
-		Text = "Join",
-		Font = Enum.Font.GothamBold,
-		TextSize = 12,
-		TextColor3 = Color3.fromRGB(255, 255, 255),
-		BackgroundColor3 = Color3.fromRGB(0, 200, 120)
-	})
-	Make("Corner", JoinButton, UDim.new(1, 0))
-
-	local ClickDelay = false
-	JoinButton.Activated:Connect(function()
-		if ClickDelay then return end
-		setclipboard("https://discord.gg/" .. Invite)
-
-		ClickDelay = true
-		SetProps(JoinButton, {
-			Text = "Copied!",
-			BackgroundColor3 = Color3.fromRGB(100, 100, 100),
-			TextColor3 = Color3.fromRGB(200, 200, 200)
-		})
-		task.wait(4)
-		SetProps(JoinButton, {
-			Text = "Join",
-			BackgroundColor3 = Color3.fromRGB(0, 200, 120),
-			TextColor3 = Color3.fromRGB(255, 255, 255)
-		})
-		ClickDelay = false
-	end)
-
-	local DiscordInvite = {}
-	function DiscordInvite:Destroy() InviteHolder:Destroy() end
-	function DiscordInvite:Visible(...) Funcs:ToggleVisible(InviteHolder, ...) end
-	return DiscordInvite
-end
+		return Tab
+	end
 	
 	CloseButton.Activated:Connect(Window.CloseBtn)
 	MinimizeButton.Activated:Connect(Window.MinimizeBtn)
