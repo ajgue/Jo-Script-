@@ -547,45 +547,45 @@ function MakeWindow(Configs)
     BackgroundTransparency = 1,
     Size = UDim2.new(1, 0, 1, 0)
   })
+  
   function MinimizeButton(Configs)
     local image = Configs.Image or ""
     local size = Configs.Size or {30, 30}
     local defaultPos = UDim2.new(0.15, 0, 0.15, 0)
+    local color = Configs.Color or Color3.fromRGB(30, 30, 30)
 
-    
     local Button = Create("ImageButton", ScreenGui, {
         Size = UDim2.new(0, size[1], 0, size[2]),
         Position = defaultPos,
-        BackgroundColor3 = Color3.new(1, 1, 1),
+        BackgroundColor3 = color,
         Image = image,
         AutoButtonColor = false,
         Active = true,
         Draggable = true
     })
 
-    
     local corner = Instance.new("UICorner", Button)
     corner.CornerRadius = UDim.new(0, 8)
 
-   
-    local gradient = Instance.new("UIGradient", Button)
-    gradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),     
+    local stroke = Instance.new("UIStroke", Button)
+    stroke.Thickness = 2
+
+    local rainbow = Instance.new("UIGradient", stroke)
+    rainbow.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
         ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 165, 0)),
         ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),   
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),
         ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 255, 255)),
-        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(0, 0, 255)),  
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(128, 0, 128))    
+        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(0, 0, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(128, 0, 128))
     }
-    gradient.Rotation = 45
+    rainbow.Rotation = 45
 
-   
     local clickSound = Instance.new("Sound", Button)
-    clickSound.SoundId = "rbxassetid://12222030" 
+    clickSound.SoundId = "rbxassetid://12222030"
     clickSound.Volume = 1
 
-    
     local minimized = false
 
     Button.MouseButton1Click:Connect(function()
@@ -607,8 +607,8 @@ function MakeWindow(Configs)
         end
     end)
 
-   
     local dragging = false
+
     Button.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
