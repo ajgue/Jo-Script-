@@ -686,12 +686,12 @@ end
         BackgroundTransparency = 1
     })
 
-    -- زوايا دائرية
+    --
     Create("UICorner", Frame, {
         CornerRadius = UDim.new(0, 12)
     })
 
-    -- حواف قوس قزح
+    
     local Stroke = Create("UIStroke", Frame, {
         Thickness = 2,
         Color = Color3.fromRGB(255, 0, 0),
@@ -1186,59 +1186,113 @@ end
   end
   
   function AddTextBox(parent, Configs)
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+
     local TextBoxName = Configs.Name or "TextBox!!"
-    local Default = Configs.Default or "TextBox"
-    local placeholderText = Configs.PlaceholderText or "TextBox"
+    local Default = Configs.Default or ""
+    local placeholderText = Configs.PlaceholderText or "Search player..."
     local ClearText = Configs.ClearText or false
     local Callback = Configs.Callback or function() end
-    
+
     local Frame = Create("Frame", parent, {
-      Size = UDim2.new(1, 0, 0, 25),
-      BackgroundColor3 = Configs_HUB.Cor_Options,
-      Name = "Frame"
-    })Corner(Frame)Stroke(Frame)
-    
+        Size = UDim2.new(1, 0, 0, 25),
+        BackgroundColor3 = Configs_HUB.Cor_Options,
+        Name = "Frame"
+    }) Corner(Frame) Stroke(Frame)
+
     local TextLabel = Create("TextButton", Frame, {
-      TextSize = 12,
-      TextColor3 = Configs_HUB.Cor_Text,
-      Text = TextBoxName,
-      Size = UDim2.new(1, 0, 1, 0),
-      Position = UDim2.new(0, 150, 0, 0),
-      BackgroundTransparency = 1,
-      TextXAlignment = "Left",
-      Font = Configs_HUB.Text_Font
+        TextSize = 12,
+        TextColor3 = Configs_HUB.Cor_Text,
+        Text = TextBoxName,
+        Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 150, 0, 0),
+        BackgroundTransparency = 1,
+        TextXAlignment = "Left",
+        Font = Configs_HUB.Text_Font
     })
     TextSetColor(TextLabel)
-    
+
     local TextBox = Create("TextBox", Frame, {
-      Size = UDim2.new(0, 120, 0, 20),
-      Position = UDim2.new(0, 15, 0, 2.5),
-      TextColor3 = Configs_HUB.Cor_Text,
-      Text = Default,
-      ClearTextOnFocus = ClearText,
-      PlaceholderText = placeholderText,
-      TextScaled = true,
-      Font = Configs_HUB.Text_Font,
-      BackgroundTransparency = 1
+        Size = UDim2.new(0, 120, 0, 20),
+        Position = UDim2.new(0, 15, 0, 2.5),
+        TextColor3 = Configs_HUB.Cor_Text,
+        Text = Default,
+        ClearTextOnFocus = ClearText,
+        PlaceholderText = placeholderText,
+        TextScaled = true,
+        Font = Configs_HUB.Text_Font,
+        BackgroundTransparency = 1
     })
-    
+
     local Line = Create("Frame", TextBox, {
-      Size = UDim2.new(1, 0, 0, 1),
-      Position = UDim2.new(0.5, 0, 1, 0),
-      AnchorPoint = Vector2.new(0.5, 0.5),
-      BackgroundColor3 = Configs_HUB.Cor_Stroke,
-      BorderSizePixel = 0
+        Size = UDim2.new(1, 0, 0, 1),
+        Position = UDim2.new(0.5, 0, 1, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Configs_HUB.Cor_Stroke,
+        BorderSizePixel = 0
     })
-    
-    TextBox.MouseEnter:Connect(function()
-      CreateTween(Line, "Size", UDim2.new(0, 0, 0, 1), 0.3, true)
-      CreateTween(Line, "Size", UDim2.new(1, 0, 0, 1), 0.3, true)
+
+    -- قائمة نتائج البحث
+    local SearchList = Create("Frame", Frame, {
+        Position = UDim2.new(0, 15, 1, 2),
+        Size = UDim2.new(0, 120, 0, 0),
+        BackgroundColor3 = Configs_HUB.Cor_Options,
+        Visible = false,
+        ClipsDescendants = true
+    }) Corner(SearchList) Stroke(SearchList)
+
+    local UIListLayout = Instance.new("UIListLayout", SearchList)
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 2)
+
+    local function UpdateSearchList(text)
+        for _, child in ipairs(SearchList:GetChildren()) do
+            if child:IsA("TextButton") then
+                child:Destroy()
+            end
+        end
+
+        local found = false
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Name:lower():sub(1, #text) == text:lower() and text ~= "" then
+                found = true
+                local button = Create("TextButton", SearchList, {
+                    Size = UDim2.new(1, 0, 0, 20),
+                    Text = player.Name,
+                    TextColor3 = Configs_HUB.Cor_Text,
+                    BackgroundTransparency = 1,
+                    Font = Configs_HUB.Text_Font
+                })
+                TextSetColor(button)
+
+                button.MouseButton1Click:Connect(function()
+                    TextBox.Text = player.Name
+                    Callback(player.Name)
+                    SearchList.Visible = false
+                    SearchList.Size = UDim2.new(0, 120, 0, 0)
+                end)
+            end
+        end
+
+        SearchList.Visible = found
+        SearchList.Size = UDim2.new(0, 120, 0, found and 60 or 0) -- حد أقصى 3 أسماء
+    end
+
+    TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+        UpdateSearchList(TextBox.Text)
     end)
-    
+
     TextBox.FocusLost:Connect(function()
-      Callback(TextBox.Text)
+        Callback(TextBox.Text)
+        SearchList.Visible = false
     end)
-  end
+
+    TextBox.MouseEnter:Connect(function()
+        CreateTween(Line, "Size", UDim2.new(0, 0, 0, 1), 0.3, true)
+        CreateTween(Line, "Size", UDim2.new(1, 0, 0, 1), 0.3, true)
+    end)
+end
   
   function AddColorPicker(parent, Configs)
     local name = Configs.Name or "Color Picker"
