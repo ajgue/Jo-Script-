@@ -547,41 +547,82 @@ function MakeWindow(Configs)
     BackgroundTransparency = 1,
     Size = UDim2.new(1, 0, 1, 0)
   })
-  
   function MinimizeButton(Configs)
     local image = Configs.Image or ""
     local size = Configs.Size or {30, 30}
-    local color = Configs.Color or Configs_HUB.Cor_Hub
-    local corner = Configs.Corner or true
-    local stroke = Configs.Stroke or false
-    local strokecolor = Configs.StrokeColor or Configs_HUB.Cor_Stroke
+    local defaultPos = UDim2.new(0.15, 0, 0.15, 0)
+
     
     local Button = Create("ImageButton", ScreenGui, {
-      Size = UDim2.new(0, size[1], 0, size[2]),
-      Position = UDim2.new(0.15, 0, 0.15, 0),
-      BackgroundColor3 = color,
-      Image = image,
-      Active = true,
-      Draggable = true
-    })if corner then Corner(Button) end if stroke then Stroke(Button, {Color = strokecolor}) end
+        Size = UDim2.new(0, size[1], 0, size[2]),
+        Position = defaultPos,
+        BackgroundColor3 = Color3.new(1, 1, 1),
+        Image = image,
+        AutoButtonColor = false,
+        Active = true,
+        Draggable = true
+    })
+
     
-    local minimize = false
+    local corner = Instance.new("UICorner", Button)
+    corner.CornerRadius = UDim.new(0, 8)
+
+   
+    local gradient = Instance.new("UIGradient", Button)
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),     
+        ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 165, 0)),
+        ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),   
+        ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 255, 255)),
+        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(0, 0, 255)),  
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(128, 0, 128))    
+    }
+    gradient.Rotation = 45
+
+   
+    local clickSound = Instance.new("Sound", Button)
+    clickSound.SoundId = "rbxassetid://12222030" 
+    clickSound.Volume = 1
+
+    
+    local minimized = false
+
     Button.MouseButton1Click:Connect(function()
-      if minimize then
-        minimize = false
-        Menu.Visible = true
-        if not IsMinimized then
-          CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 270), 0.3, false)
+        clickSound:Play()
+        if minimized then
+            minimized = false
+            Menu.Visible = true
+            if not IsMinimized then
+                CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 270), 0.3, false)
+            else
+                CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 25), 0.3, false)
+            end
         else
-          CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 25), 0.3, false)
+            minimized = true
+            CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 0), 0.3, true)
+            task.delay(0.3, function()
+                Menu.Visible = false
+            end)
         end
-      else
-        minimize = true
-        CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 0), 0.3, true)
-        Menu.Visible = false
-      end
     end)
-  end
+
+   
+    local dragging = false
+    Button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+
+    Button.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+            task.wait(0.1)
+            Button.Position = defaultPos
+        end
+    end)
+end
   
   local ScrollBar = Create("ScrollingFrame", Menu, {
     Size = UDim2.new(0, 140, 1, -tonumber(TopBar.Size.Y.Offset + 2)),
