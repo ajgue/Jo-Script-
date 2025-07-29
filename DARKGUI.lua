@@ -1447,8 +1447,11 @@ end
   
   function AddDropdown(parent, Configs)
     local DropdownName = Configs.Name or "Dropdown!!"
-    local Options = Configs.Options or {} 
+    local Default = Configs.Default or "TextBox"
+    local Options = Configs.Options or {"1", "2", "3"}
     local Callback = Configs.Callback or function() end
+
+    local Players = game:GetService("Players")
 
     local TextButton = Create("TextButton", parent, {
         Size = UDim2.new(1, 0, 0, 25),
@@ -1493,7 +1496,7 @@ end
         TextColor3 = Configs_HUB.Cor_DarkText,
         TextScaled = true,
         Font = Configs_HUB.Text_Font,
-        Text = "..."
+        Text = Default
     }) Corner(DefaultText) Stroke(DefaultText)
 
     local ScrollBar = Create("ScrollingFrame", TextButton, {
@@ -1518,42 +1521,63 @@ end
         Padding = UDim.new(0, 5)
     })
 
-    
-    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
-        local OptionButton = Create("ImageButton", ScrollBar, {
-            Size = UDim2.new(1, 0, 0, 40),
-            BackgroundColor3 = Configs_HUB.Cor_Hub,
-            Name = player.Name,
-            Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
-        })
-        Corner(OptionButton)
-        Stroke(OptionButton)
+    local isOpen = false
+    TextButton.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        ScrollBar.Visible = isOpen
+        Line.Visible = isOpen
+    end)
 
-        Create("TextLabel", OptionButton, {
-            Size = UDim2.new(1, -50, 1, 0),
-            Position = UDim2.new(0, 45, 0, 0),
-            BackgroundTransparency = 1,
-            Text = player.Name,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            Font = Configs_HUB.Text_Font,
-            TextColor3 = Configs_HUB.Cor_Text,
-            TextSize = 14
-        })
-
-        OptionButton.MouseButton1Click:Connect(function()
-            DefaultText.Text = player.Name
-            ScrollBar.Visible = false
-            Line.Visible = false
-            Callback(player.Name)
-        end)
+    for _, v in pairs(ScrollBar:GetChildren()) do
+        if v:IsA("Frame") then
+            v:Destroy()
+        end
     end
 
-  
-    TextButton.MouseButton1Click:Connect(function()
-        local visible = not ScrollBar.Visible
-        ScrollBar.Visible = visible
-        Line.Visible = visible
-    end)
+    for _, playerName in ipairs(Options) do
+        local player = Players:FindFirstChild(playerName)
+        local imageId = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+
+        if player then
+            local userId = player.UserId
+            local content, isReady = Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+            if isReady then
+                imageId = content
+            end
+        end
+
+        local OptionFrame = Create("Frame", ScrollBar, {
+            Size = UDim2.new(1, 0, 0, 30),
+            BackgroundTransparency = 1
+        })
+
+        local Image = Create("ImageLabel", OptionFrame, {
+            Image = imageId,
+            Size = UDim2.new(0, 24, 0, 24),
+            Position = UDim2.new(0, 0, 0.5, -12),
+            BackgroundTransparency = 1
+        })
+
+        local Label = Create("TextLabel", OptionFrame, {
+            Text = playerName,
+            Size = UDim2.new(1, -30, 1, 0),
+            Position = UDim2.new(0, 30, 0, 0),
+            BackgroundTransparency = 1,
+            TextColor3 = Configs_HUB.Cor_Text,
+            Font = Configs_HUB.Text_Font,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+
+        OptionFrame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                DefaultText.Text = playerName
+                isOpen = false
+                ScrollBar.Visible = false
+                Line.Visible = false
+                Callback(playerName)
+            end
+        end)
+    end
 end
     
     local function AddOption(OptionName)
