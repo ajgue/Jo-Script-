@@ -1233,7 +1233,7 @@ end
         BorderSizePixel = 0
     })
 
-    -- قائمة نتائج البحث
+    
     local SearchList = Create("Frame", Frame, {
         Position = UDim2.new(0, 15, 1, 2),
         Size = UDim2.new(0, 120, 0, 0),
@@ -1447,73 +1447,114 @@ end
   
   function AddDropdown(parent, Configs)
     local DropdownName = Configs.Name or "Dropdown!!"
-    local Default = Configs.Default or "TextBox"
-    local Options = Configs.Options or {"1", "2", "3"}
-    local Default = Configs.Default or "2"
+    local Options = Configs.Options or {} 
     local Callback = Configs.Callback or function() end
-    
+
     local TextButton = Create("TextButton", parent, {
-      Size = UDim2.new(1, 0, 0, 25),
-      BackgroundColor3 = Configs_HUB.Cor_Options,
-      Name = "Frame",
-      Text = "",
-      AutoButtonColor = false
-    })Corner(Frame)Stroke(Frame)
-    
+        Size = UDim2.new(1, 0, 0, 25),
+        BackgroundColor3 = Configs_HUB.Cor_Options,
+        Name = "Frame",
+        Text = "",
+        AutoButtonColor = false
+    }) Corner(TextButton) Stroke(TextButton)
+
     local TextLabel = Create("TextLabel", TextButton, {
-      TextSize = 12,
-      TextColor3 = Configs_HUB.Cor_Text,
-      Text = DropdownName,
-      Size = UDim2.new(1, 0, 0, 25),
-      Position = UDim2.new(0, 35, 0, 0),
-      BackgroundTransparency = 1,
-      TextXAlignment = "Left",
-      Font = Configs_HUB.Text_Font
-    })TextSetColor(TextLabel)
-    
+        TextSize = 12,
+        TextColor3 = Configs_HUB.Cor_Text,
+        Text = DropdownName,
+        Size = UDim2.new(1, 0, 0, 25),
+        Position = UDim2.new(0, 35, 0, 0),
+        BackgroundTransparency = 1,
+        TextXAlignment = "Left",
+        Font = Configs_HUB.Text_Font
+    }) TextSetColor(TextLabel)
+
     local Line = Create("Frame", TextButton, {
-      Size = UDim2.new(1, 0, 0, 1),
-      Position = UDim2.new(0, 0, 0, 25),
-      BorderSizePixel = 0,
-      BackgroundColor3 = Configs_HUB.Cor_Stroke,
-      Visible = false
+        Size = UDim2.new(1, 0, 0, 1),
+        Position = UDim2.new(0, 0, 0, 25),
+        BorderSizePixel = 0,
+        BackgroundColor3 = Configs_HUB.Cor_Stroke,
+        Visible = false
     })
-    
+
     local Arrow = Create("ImageLabel", TextButton, {
-      Image = "rbxassetid://6031090990",
-      Size = UDim2.new(0, 25, 0, 25),
-      Position = UDim2.new(0, 5, 0, 0),
-      BackgroundTransparency = 1
+        Image = "rbxassetid://6031090990",
+        Size = UDim2.new(0, 25, 0, 25),
+        Position = UDim2.new(0, 5, 0, 0),
+        BackgroundTransparency = 1
     })
-    
+
     local DefaultText = Create("TextLabel", TextButton, {
-      BackgroundColor3 = Configs_HUB.Cor_Hub,
-      BackgroundTransparency = 0.1,
-      Position = UDim2.new(1, -20, 0, 2.5),
-      AnchorPoint = Vector2.new(1, 0),
-      Size = UDim2.new(0, 100, 0, 20),
-      TextColor3 = Configs_HUB.Cor_DarkText,
-      TextScaled = true,
-      Font = Configs_HUB.Text_Font,
-      Text = "..."
-    })Corner(DefaultText)Stroke(DefaultText)
-    
+        BackgroundColor3 = Configs_HUB.Cor_Hub,
+        BackgroundTransparency = 0.1,
+        Position = UDim2.new(1, -20, 0, 2.5),
+        AnchorPoint = Vector2.new(1, 0),
+        Size = UDim2.new(0, 100, 0, 20),
+        TextColor3 = Configs_HUB.Cor_DarkText,
+        TextScaled = true,
+        Font = Configs_HUB.Text_Font,
+        Text = "..."
+    }) Corner(DefaultText) Stroke(DefaultText)
+
     local ScrollBar = Create("ScrollingFrame", TextButton, {
-      Size = UDim2.new(1, 0, 1, -25),
-      Position = UDim2.new(0, 0, 0, 25),
-      CanvasSize = UDim2.new(),
-      ScrollingDirection = "Y",
-      AutomaticCanvasSize = "Y",
-      BackgroundTransparency = 1,
-      ScrollBarThickness = 2
-    })Create("UIPadding", ScrollBar, {
-      PaddingLeft = UDim.new(0, 10),
-      PaddingRight = UDim.new(0, 10),
-      PaddingTop = UDim.new(0, 10),
-      PaddingBottom = UDim.new(0, 10)
-    })Create("UIListLayout", ScrollBar, {
-      Padding = UDim.new(0, 5)
+        Size = UDim2.new(1, 0, 1, -25),
+        Position = UDim2.new(0, 0, 0, 25),
+        CanvasSize = UDim2.new(),
+        ScrollingDirection = "Y",
+        AutomaticCanvasSize = "Y",
+        BackgroundTransparency = 1,
+        ScrollBarThickness = 2,
+        Visible = false
     })
+
+    Create("UIPadding", ScrollBar, {
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+        PaddingBottom = UDim.new(0, 10)
+    })
+
+    Create("UIListLayout", ScrollBar, {
+        Padding = UDim.new(0, 5)
+    })
+
+    
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        local OptionButton = Create("ImageButton", ScrollBar, {
+            Size = UDim2.new(1, 0, 0, 40),
+            BackgroundColor3 = Configs_HUB.Cor_Hub,
+            Name = player.Name,
+            Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
+        })
+        Corner(OptionButton)
+        Stroke(OptionButton)
+
+        Create("TextLabel", OptionButton, {
+            Size = UDim2.new(1, -50, 1, 0),
+            Position = UDim2.new(0, 45, 0, 0),
+            BackgroundTransparency = 1,
+            Text = player.Name,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Font = Configs_HUB.Text_Font,
+            TextColor3 = Configs_HUB.Cor_Text,
+            TextSize = 14
+        })
+
+        OptionButton.MouseButton1Click:Connect(function()
+            DefaultText.Text = player.Name
+            ScrollBar.Visible = false
+            Line.Visible = false
+            Callback(player.Name)
+        end)
+    end
+
+  
+    TextButton.MouseButton1Click:Connect(function()
+        local visible = not ScrollBar.Visible
+        ScrollBar.Visible = visible
+        Line.Visible = visible
+    end)
+end
     
     local function AddOption(OptionName)
       local TextButton = Create("TextButton", ScrollBar, {
