@@ -7,17 +7,7 @@ local Configs_HUB = {
   Corner_Radius = UDim.new(0, 15), 
   Text_Font = Enum.Font.FredokaOne,
 
-  Text_Colors = {
-    Color3.fromRGB(255, 0, 0),   
-    Color3.fromRGB(255, 128, 0),   
-    Color3.fromRGB(255, 255, 0),   
-    Color3.fromRGB(0, 255, 0),     
-    Color3.fromRGB(0, 255, 255),   
-    Color3.fromRGB(0, 0, 255),     
-    Color3.fromRGB(128, 0, 255)   
-  }
-}
-
+  
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -1445,140 +1435,154 @@ end
     end)
   end
   
-  local Players = game:GetService("Players")
+  function AddDropdown(parent, Configs)
+    local DropdownName = Configs.Name or "Dropdown!!"
+    local Default = Configs.Default or "TextBox"
+    local Options = Configs.Options or {"1", "2", "3"}
+    local Callback = Configs.Callback or function() end
 
-function AddDropdown(parent, Configs)
-	local DropdownName = Configs.Name or "Dropdown!!"
-	local Callback = Configs.Callback or function() end
+    local Players = game:GetService("Players")
+    local ThumbnailType = Enum.ThumbnailType.HeadShot
+    local ThumbnailSize = Enum.ThumbnailSize.Size48x48
 
-	local Frame = Create("TextButton", parent, {
-		Size = UDim2.new(1, 0, 0, 25),
-		BackgroundColor3 = Configs_HUB.Cor_Options,
-		Text = "",
-		AutoButtonColor = false
-	}) Corner(Frame) Stroke(Frame)
+    local TextButton = Create("TextButton", parent, {
+        Size = UDim2.new(1, 0, 0, 25),
+        BackgroundColor3 = Configs_HUB.Cor_Options,
+        Name = "Frame",
+        Text = "",
+        AutoButtonColor = false
+    }) Corner(TextButton) Stroke(TextButton)
 
-	local Label = Create("TextLabel", Frame, {
-		Text = DropdownName,
-		Size = UDim2.new(1, 0, 0, 25),
-		Position = UDim2.new(0, 35, 0, 0),
-		TextXAlignment = Enum.TextXAlignment.Left,
-		TextColor3 = Configs_HUB.Cor_Text,
-		BackgroundTransparency = 1,
-		Font = Configs_HUB.Text_Font,
-		TextSize = 12
-	}) TextSetColor(Label)
+    local TextLabel = Create("TextLabel", TextButton, {
+        TextSize = 12,
+        TextColor3 = Configs_HUB.Cor_Text,
+        Text = DropdownName,
+        Size = UDim2.new(1, 0, 0, 25),
+        Position = UDim2.new(0, 35, 0, 0),
+        BackgroundTransparency = 1,
+        TextXAlignment = "Left",
+        Font = Configs_HUB.Text_Font
+    }) TextSetColor(TextLabel)
 
-	local Arrow = Create("ImageLabel", Frame, {
-		Image = "rbxassetid://6031090990",
-		Size = UDim2.new(0, 25, 0, 25),
-		Position = UDim2.new(0, 5, 0, 0),
-		BackgroundTransparency = 1
-	})
+    local Line = Create("Frame", TextButton, {
+        Size = UDim2.new(1, 0, 0, 1),
+        Position = UDim2.new(0, 0, 0, 25),
+        BorderSizePixel = 0,
+        BackgroundColor3 = Configs_HUB.Cor_Stroke,
+        Visible = false
+    })
 
-	local DefaultText = Create("TextLabel", Frame, {
-		Text = "...",
-		Size = UDim2.new(0, 100, 0, 20),
-		Position = UDim2.new(1, -20, 0, 2.5),
-		AnchorPoint = Vector2.new(1, 0),
-		TextColor3 = Configs_HUB.Cor_DarkText,
-		TextScaled = true,
-		Font = Configs_HUB.Text_Font,
-		BackgroundColor3 = Configs_HUB.Cor_Hub,
-		BackgroundTransparency = 0.1
-	}) Corner(DefaultText) Stroke(DefaultText)
+    local Arrow = Create("ImageLabel", TextButton, {
+        Image = "rbxassetid://6031090990",
+        Size = UDim2.new(0, 25, 0, 25),
+        Position = UDim2.new(0, 5, 0, 0),
+        BackgroundTransparency = 1
+    })
 
-	local Dropdown = Create("Frame", parent, {
-		Size = UDim2.new(1, 0, 0, 200),
-		BackgroundColor3 = Configs_HUB.Cor_Options,
-		Visible = false,
-		ClipsDescendants = true
-	}) Corner(Dropdown) Stroke(Dropdown)
+    local DefaultText = Create("TextLabel", TextButton, {
+        BackgroundColor3 = Configs_HUB.Cor_Hub,
+        BackgroundTransparency = 0.1,
+        Position = UDim2.new(1, -20, 0, 2.5),
+        AnchorPoint = Vector2.new(1, 0),
+        Size = UDim2.new(0, 100, 0, 20),
+        TextColor3 = Configs_HUB.Cor_DarkText,
+        TextScaled = true,
+        Font = Configs_HUB.Text_Font,
+        Text = "..."
+    }) Corner(DefaultText) Stroke(DefaultText)
 
-	local SearchBox = Create("TextBox", Dropdown, {
-		PlaceholderText = "🔍 ابحث عن لاعب...",
-		Size = UDim2.new(1, -20, 0, 25),
-		Position = UDim2.new(0, 10, 0, 10),
-		TextColor3 = Configs_HUB.Cor_Text,
-		BackgroundColor3 = Configs_HUB.Cor_Hub,
-		ClearTextOnFocus = false,
-		Text = "",
-		Font = Configs_HUB.Text_Font,
-		TextSize = 14
-	}) Corner(SearchBox) Stroke(SearchBox)
+    local ScrollBar = Create("ScrollingFrame", TextButton, {
+        Size = UDim2.new(1, 0, 1, -25),
+        Position = UDim2.new(0, 0, 0, 25),
+        CanvasSize = UDim2.new(),
+        ScrollingDirection = "Y",
+        AutomaticCanvasSize = "Y",
+        BackgroundTransparency = 1,
+        ScrollBarThickness = 2
+    }) Create("UIPadding", ScrollBar, {
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+        PaddingBottom = UDim.new(0, 10)
+    }) Create("UIListLayout", ScrollBar, {
+        Padding = UDim.new(0, 5)
+    })
 
-	local Scroll = Create("ScrollingFrame", Dropdown, {
-		Size = UDim2.new(1, -20, 1, -50),
-		Position = UDim2.new(0, 10, 0, 40),
-		CanvasSize = UDim2.new(),
-		AutomaticCanvasSize = Enum.AutomaticSize.Y,
-		ScrollingDirection = Enum.ScrollingDirection.Y,
-		BackgroundTransparency = 1,
-		ScrollBarThickness = 3
-	})
-	Create("UIListLayout", Scroll, {
-		Padding = UDim.new(0, 5)
-	})
+    local SearchBox = Create("TextBox", ScrollBar, {
+        PlaceholderText = "Search...",
+        Size = UDim2.new(1, 0, 0, 25),
+        Text = "",
+        ClearTextOnFocus = false,
+        BackgroundColor3 = Configs_HUB.Cor_Hub,
+        TextColor3 = Configs_HUB.Cor_Text,
+        Font = Configs_HUB.Text_Font,
+        TextSize = 12,
+        BorderSizePixel = 0
+    }) Corner(SearchBox) Stroke(SearchBox)
 
-	-- دالة تحديث النتائج حسب النص
-	local function UpdateList(text)
-		for _, child in pairs(Scroll:GetChildren()) do
-			if child:IsA("TextButton") then
-				child:Destroy()
-			end
-		end
+    local OptionsHolders = {}
 
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player.Name:lower():find(text:lower()) then
-				local Thumbnail = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
+    local function UpdateDropdownList(filter)
+        for _, item in pairs(OptionsHolders) do
+            item.Visible = item.Name:lower():find(filter:lower()) ~= nil
+        end
+    end
 
-				local Btn = Create("TextButton", Scroll, {
-					Size = UDim2.new(1, 0, 0, 40),
-					Text = "",
-					BackgroundColor3 = Configs_HUB.Cor_Hub,
-					AutoButtonColor = true
-			 }) Corner(Btn) Stroke(Btn)
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        UpdateDropdownList(SearchBox.Text)
+    end)
 
-				Create("ImageLabel", Btn, {
-					Image = Thumbnail,
-					Size = UDim2.new(0, 30, 0, 30),
-					Position = UDim2.new(0, 5, 0.5, -15),
-					BackgroundTransparency = 1
-				})
+    for _, option in ipairs(Options) do
+        local OptionBtn = Create("Frame", ScrollBar, {
+            Name = option,
+            Size = UDim2.new(1, 0, 0, 35),
+            BackgroundColor3 = Configs_HUB.Cor_Options,
+            BorderSizePixel = 0
+        }) Corner(OptionBtn) Stroke(OptionBtn)
 
-				Create("TextLabel", Btn, {
-					Text = player.Name,
-					Size = UDim2.new(1, -40, 1, 0),
-					Position = UDim2.new(0, 40, 0, 0),
-					BackgroundTransparency = 1,
-					TextColor3 = Configs_HUB.Cor_Text,
-					TextXAlignment = Enum.TextXAlignment.Left,
-					Font = Configs_HUB.Text_Font,
-					TextSize = 14
-				})
+        local ClickBtn = Create("TextButton", OptionBtn, {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 1, 0),
+            Text = "",
+            AutoButtonColor = false
+        })
 
-				Btn.MouseButton1Click:Connect(function()
-					DefaultText.Text = player.Name
-					Callback(player)
-					Dropdown.Visible = false
-				end)
-			end
-		end
-	end
+        local Thumbnail
+        local success = pcall(function()
+            local userId = Players:GetUserIdFromNameAsync(option)
+            Thumbnail = Players:GetUserThumbnailAsync(userId, ThumbnailType, ThumbnailSize)
+        end)
 
-	SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-		UpdateList(SearchBox.Text)
-	end)
+        if success and Thumbnail then
+            Create("ImageLabel", OptionBtn, {
+                Size = UDim2.new(0, 30, 0, 30),
+                Position = UDim2.new(0, 3, 0.5, 0),
+                AnchorPoint = Vector2.new(0, 0.5),
+                BackgroundTransparency = 1,
+                Image = Thumbnail
+            })
+        end
 
-	-- فتح وإغلاق القائمة
-	Frame.MouseButton1Click:Connect(function()
-		Dropdown.Visible = not Dropdown.Visible
-		if Dropdown.Visible then
-			SearchBox.Text = ""
-			UpdateList("")
-		end
-	end)
+        Create("TextLabel", OptionBtn, {
+            Text = option,
+            Size = UDim2.new(1, -40, 1, 0),
+            Position = UDim2.new(0, 40, 0, 0),
+            BackgroundTransparency = 1,
+            TextColor3 = Configs_HUB.Cor_Text,
+            Font = Configs_HUB.Text_Font,
+            TextSize = 12,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+
+        ClickBtn.MouseButton1Click:Connect(function()
+            DefaultText.Text = option
+            Callback(option)
+        end)
+
+        table.insert(OptionsHolders, OptionBtn)
+    end
 end
+
     local function AddOption(OptionName)
       local TextButton = Create("TextButton", ScrollBar, {
         Size = UDim2.new(1, 0, 0, 15),
