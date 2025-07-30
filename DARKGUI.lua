@@ -1441,10 +1441,6 @@ end
     local Options = Configs.Options or {"1", "2", "3"}
     local Callback = Configs.Callback or function() end
 
-    local Players = game:GetService("Players")
-    local ThumbnailType = Enum.ThumbnailType.HeadShot
-    local ThumbnailSize = Enum.ThumbnailSize.Size48x48
-
     local TextButton = Create("TextButton", parent, {
         Size = UDim2.new(1, 0, 0, 25),
         BackgroundColor3 = Configs_HUB.Cor_Options,
@@ -1508,6 +1504,7 @@ end
         Padding = UDim.new(0, 5)
     })
 
+    -- ✅ Search Box
     local SearchBox = Create("TextBox", ScrollBar, {
         PlaceholderText = "Search...",
         Size = UDim2.new(1, 0, 0, 25),
@@ -1532,49 +1529,20 @@ end
         UpdateDropdownList(SearchBox.Text)
     end)
 
+    -- ✅ Create Options
     for _, option in ipairs(Options) do
-        local OptionBtn = Create("Frame", ScrollBar, {
+        local OptionBtn = Create("TextButton", ScrollBar, {
             Name = option,
-            Size = UDim2.new(1, 0, 0, 35),
+            Size = UDim2.new(1, 0, 0, 25),
             BackgroundColor3 = Configs_HUB.Cor_Options,
+            TextColor3 = Configs_HUB.Cor_Text,
+            Font = Configs_HUB.Text_Font,
+            Text = option,
+            TextSize = 12,
             BorderSizePixel = 0
         }) Corner(OptionBtn) Stroke(OptionBtn)
 
-        local ClickBtn = Create("TextButton", OptionBtn, {
-            BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 1, 0),
-            Text = "",
-            AutoButtonColor = false
-        })
-
-        local Thumbnail
-        local success = pcall(function()
-            local userId = Players:GetUserIdFromNameAsync(option)
-            Thumbnail = Players:GetUserThumbnailAsync(userId, ThumbnailType, ThumbnailSize)
-        end)
-
-        if success and Thumbnail then
-            Create("ImageLabel", OptionBtn, {
-                Size = UDim2.new(0, 30, 0, 30),
-                Position = UDim2.new(0, 3, 0.5, 0),
-                AnchorPoint = Vector2.new(0, 0.5),
-                BackgroundTransparency = 1,
-                Image = Thumbnail
-            })
-        end
-
-        Create("TextLabel", OptionBtn, {
-            Text = option,
-            Size = UDim2.new(1, -40, 1, 0),
-            Position = UDim2.new(0, 40, 0, 0),
-            BackgroundTransparency = 1,
-            TextColor3 = Configs_HUB.Cor_Text,
-            Font = Configs_HUB.Text_Font,
-            TextSize = 12,
-            TextXAlignment = Enum.TextXAlignment.Left
-        })
-
-        ClickBtn.MouseButton1Click:Connect(function()
+        OptionBtn.MouseButton1Click:Connect(function()
             DefaultText.Text = option
             Callback(option)
         end)
@@ -1583,80 +1551,6 @@ end
     end
 end
 
-    local function AddOption(OptionName)
-      local TextButton = Create("TextButton", ScrollBar, {
-        Size = UDim2.new(1, 0, 0, 15),
-        Text = OptionName,
-        Font = Configs_HUB.Text_Font,
-        TextSize = 12,
-        TextColor3 = Color3.fromRGB(180, 180, 180),
-        BackgroundTransparency = 1
-      })Corner(TextButton)
-      
-      local SelectTable = {}
-      local OnOff = false
-      if OptionName == Default then
-        OnOff = true
-        TextButton.BackgroundTransparency = 0.8
-        TextButton.TextColor3 = Configs_HUB.Cor_Text
-        DefaultText.Text = OptionName
-        Callback(OptionName)
-      end
-      
-      TextButton.MouseButton1Click:Connect(function()
-        for _,v in pairs(ScrollBar:GetChildren()) do
-          if v:IsA("TextButton") then
-            v.BackgroundTransparency = 1
-            v.TextColor3 = Color3.fromRGB(180, 180, 180)
-          end
-        end
-        DefaultText.Text = OptionName
-        Callback(OptionName)
-        TextButton.BackgroundTransparency = 0.8
-        TextButton.TextColor3 = Configs_HUB.Cor_Text
-      end)
-    end
-    
-    for _,v in pairs(Options) do
-      AddOption(v)
-    end
-    
-    local DropOnOff = false
-    TextButton.MouseButton1Click:Connect(function()
-      local OptionSize, OptionsNumber = 25, 0
-      for _,v in pairs(ScrollBar:GetChildren()) do
-        if v:IsA("TextButton") and OptionsNumber < 5 then
-          OptionsNumber = OptionsNumber + 1
-          OptionSize = OptionSize + tonumber(v.Size.Y.Offset + 10)
-        end
-      end
-      if not DropOnOff then
-        CreateTween(TextButton, "Size", UDim2.new(1, 0, 0, OptionSize), 0.3, false)
-        CreateTween(Arrow, "Rotation", 180, 0.3, false)
-        DropOnOff = true
-        Line.Visible = true
-      else
-        CreateTween(TextButton, "Size", UDim2.new(1, 0, 0, 25), 0.3, false)
-        CreateTween(Arrow, "Rotation", 0, 0.3, true)
-        DropOnOff = false
-        Line.Visible = false
-      end
-    end)
-    return {ScrollBar, Default, Callback, DefaultText}
-  end
-  
-  function UpdateDropdown(Dropdown, NewOptions)
-    local ScrollBar = Dropdown[1]
-    local Default = Dropdown[2]
-    local Callback = Dropdown[3]
-    local DefaultText = Dropdown[4]
-    
-    for _,v in pairs(ScrollBar:GetChildren()) do
-      if v:IsA("TextButton") then
-        v:Destroy()
-      end
-    end
-    
     local function AddOption(OptionName)
       local TextButton = Create("TextButton", ScrollBar, {
         Size = UDim2.new(1, 0, 0, 15),
