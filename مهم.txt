@@ -1,18 +1,34 @@
-local Libary = loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/Library-ui/refs/heads/main/Redzhubui"))()
-workspace.FallenPartsDestroyHeight = -math.huge
-
-local Window = Libary:MakeWindow({
-    Title = "Chaos Hub | Brookhaven RP ",
-    SubTitle = "by: Luscaa and venom",
-    LoadText = "Carregando Chaos Hub",
-    Flags = "ChaosHub_Broookhaven"
+loadstring(game:HttpGet(("https://raw.githubusercontent.com/ajgue/Dark-script-/refs/heads/main/GUI%20DARK%20%20(2).txt")))()
+MakeWindow({
+  Hub = {
+    Title = "DEEP HUB ",
+    Animation = "DEEP HUB"
+  },
+    Key = {
+    KeySystem = false,
+    Title = "Key System",
+    Description = "تلكه المفتاح بقناتي تلي ",
+    KeyLink = "https://t.me/xxx90xxxiii",
+    Keys = {"SAD55"},
+    Notifi = {
+      Notifications = true,
+      CorrectKey = "المفتاح صحيح",
+      Incorrectkey = "المفتاح خطأ",
+      CopyKeyLink = "تم النسخ في الحافظة"
+    }
+  }
 })
-Window:AddMinimizeButton({
-    Button = { Image = "rbxassetid://131669852271916", BackgroundTransparency = 0 },
-    Corner = { CornerRadius = UDim.new(35, 1) },
-})
-local Troll = Window:MakeTab({ Title = "Troll Players", Icon = "rbxassetid://131153193945220" })
 
+MinimizeButton({
+  Image = "rbxassetid://98360849741395",
+  Size = {50, 50},
+  Color = Color3.fromRGB(255, 125, 0),
+  Corner = true,
+  Stroke = false,
+  StrokeColor = Color3.fromRGB(255, 125, 0)
+})
+
+local Main = MakeTab({Name = "info"})
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -437,30 +453,36 @@ end
         return playerNames
     end
 
-    local killDropdown = Troll:AddDropdown({
-        Name = "Selecionar Jogador",
-        Options = getPlayerList(),
-        Default = "",
-        Callback = function(value)
+    local Dropdown = AddDropdown(Main, {
+    Name = "اختار اللاعب",
+    Default = "",
+    Options = GetPlayerNames(),
+    Callback = function(value)
+        Target = value
+    end
+})
             selectedPlayerName = value
             getgenv().Target = value
             print("Jogador selecionado: " .. tostring(value))
         end
     })
     
-Troll:AddDropdown({
-        Name = "Selecionar Método para Matar",
-        Options = {"Bus", "Couch", "Couch Sem ir até o alvo [BETA]"},
-        Default = "",
-        Callback = function(value)
+local Dropdown = AddDropdown(Main, {
+    Name = "اختار طريقة قتل",
+    Default = "",
+    Options = GetPlayerNames(),
+    Callback = function(value)
+        Target = value
+    end
+})
             methodKill = value
             print("Método selecionado: " .. tostring(value))
         end
     })
 
-    Troll:AddButton({
-        Name = "Matar Player",
-        Callback = function()
+    AddButton(Main, {
+    Name = "قتل لاعب",
+    Callback = function()
             if not selectedPlayerName or not Players:FindFirstChild(selectedPlayerName) then
                 print("Erro: Player não selecionado ou não existe")
                 return
@@ -562,9 +584,9 @@ Troll:AddDropdown({
         end
     })
 
-    Troll:AddButton({
-        Name = "Puxar Player",
-        Callback = function()
+    AddButton(Main, {
+    Name = "قتل لاعب",
+    Callback = function()
             if not selectedPlayerName or not Players:FindFirstChild(selectedPlayerName) then
                 print("Erro: Player não selecionado ou não existe")
                 return
