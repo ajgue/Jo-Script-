@@ -543,42 +543,65 @@ function MakeWindow(Configs)
   })
   
   function MinimizeButton(Configs)
-    local imageOpen = Configs.ImageOpen or ""
-    local imageClose = Configs.ImageClose or ""
+    local image = Configs.Image or ""
     local size = Configs.Size or {30, 30}
     local color = Configs.Color or Configs_HUB.Cor_Hub
     local corner = Configs.Corner or true
     local stroke = Configs.Stroke or false
     local strokecolor = Configs.StrokeColor or Configs_HUB.Cor_Stroke
-
+    
     local Button = Create("ImageButton", ScreenGui, {
-        Size = UDim2.new(0, size[1], 0, size[2]),
-        Position = UDim2.new(0.15, 0, 0.15, 0),
-        BackgroundColor3 = color,
-        Image = imageOpen,
-        Active = true,
-        Draggable = true
-    })
-
-    if corner then Corner(Button) end
-    if stroke then Stroke(Button, {Color = strokecolor}) end
-
+      Size = UDim2.new(0, size[1], 0, size[2]),
+      Position = UDim2.new(0.15, 0, 0.15, 0),
+      BackgroundColor3 = color,
+      Image = image,
+      Active = true,
+      Draggable = true
+    })if corner then Corner(Button) end if stroke then Stroke(Button, {Color = strokecolor}) end
+    
     local minimize = false
     Button.MouseButton1Click:Connect(function()
-        minimize = not minimize
-        Button.Image = minimize and imageClose or imageOpen
-
-        if minimize then
-            CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 0), 0.3, true)
-            Menu.Visible = false
+      if minimize then
+        minimize = false
+        Menu.Visible = true
+        if not IsMinimized then
+          CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 270), 0.3, false)
         else
-            Menu.Visible = true
-            local sizeY = IsMinimized and 25 or 270
-            CreateTween(Menu, "Size", UDim2.new(0, 500, 0, sizeY), 0.3, false)
+          CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 25), 0.3, false)
         end
+      else
+        minimize = true
+        CreateTween(Menu, "Size", UDim2.new(0, 500, 0, 0), 0.3, true)
+        Menu.Visible = false
+      end
     end)
-end
+  end
   
+  local ScrollBar = Create("ScrollingFrame", Menu, {
+    Size = UDim2.new(0, 140, 1, -tonumber(TopBar.Size.Y.Offset + 2)),
+    Position = UDim2.new(0, 0, 1, 0),
+    AnchorPoint = Vector2.new(0, 1),
+    CanvasSize = UDim2.new(),
+    ScrollingDirection = "Y",
+    AutomaticCanvasSize = "Y",
+    BackgroundTransparency = 1,
+    ScrollBarThickness = 2
+  })Create("UIPadding", ScrollBar, {
+    PaddingLeft = UDim.new(0, 10),
+    PaddingRight = UDim.new(0, 10),
+    PaddingTop = UDim.new(0, 10),
+    PaddingBottom = UDim.new(0, 10)
+  })Create("UIListLayout", ScrollBar, {
+    Padding = UDim.new(0, 5)
+  })
+  
+  local Containers = Create("Frame", Menu, {
+    Size = UDim2.new(1, -tonumber(ScrollBar.Size.X.Offset + 2), 1, -tonumber(TopBar.Size.Y.Offset + 2)),
+    AnchorPoint = Vector2.new(1, 1),
+    Position = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1
+  })Corner(Containers)
+
   local function Add_Line(props)
     local line = Create("Frame", line_Containers, props)
     line.BackgroundColor3 = Configs_HUB.Cor_Stroke
@@ -1340,7 +1363,94 @@ end
     })Create("UIListLayout", ScrollBar, {
       Padding = UDim.new(0, 5)
     })
-    
+    function AddDrobColor(parent, Configs)
+    local DropdownName = Configs.Name or "Drob Color"
+    local Options = Configs.Options or {"أحمر", "أخضر", "أزرق"}
+    local Callback = Configs.Callback or function() end
+
+    local Frame = Create("TextButton", parent, {
+        Size = UDim2.new(1, 0, 0, 25),
+        BackgroundColor3 = Configs_HUB.Cor_Options,
+        Name = "DropdownFrame",
+        Text = "",
+        AutoButtonColor = false
+    }) Corner(Frame) Stroke(Frame)
+
+    local Title = Create("TextLabel", Frame, {
+        TextSize = 12,
+        TextColor3 = Configs_HUB.Cor_Text,
+        Text = DropdownName,
+        Size = UDim2.new(1, 0, 0, 25),
+        Position = UDim2.new(0, 35, 0, 0),
+        BackgroundTransparency = 1,
+        TextXAlignment = "Left",
+        Font = Configs_HUB.Text_Font
+    }) TextSetColor(Title)
+
+    local Arrow = Create("ImageLabel", Frame, {
+        Image = "rbxassetid://6031090990",
+        Size = UDim2.new(0, 25, 0, 25),
+        Position = UDim2.new(0, 5, 0, 0),
+        BackgroundTransparency = 1
+    })
+
+    local DropdownVisible = false
+
+    local ScrollBar = Create("ScrollingFrame", Frame, {
+        Size = UDim2.new(1, 0, 0, 0),
+        Position = UDim2.new(0, 0, 1, 0),
+        BackgroundTransparency = 1,
+        ScrollingDirection = "Y",
+        AutomaticCanvasSize = "Y",
+        CanvasSize = UDim2.new(),
+        ScrollBarThickness = 2,
+        Visible = false,
+        ClipsDescendants = true
+    })
+
+    Create("UIPadding", ScrollBar, {
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 5),
+        PaddingBottom = UDim.new(0, 5)
+    })
+
+    Create("UIListLayout", ScrollBar, {
+        Padding = UDim.new(0, 5)
+    })
+
+    -- خيارات الألوان
+    for _, colorName in ipairs(Options) do
+        local button = Create("TextButton", ScrollBar, {
+            Size = UDim2.new(1, 0, 0, 25),
+            BackgroundColor3 = Configs_HUB.Cor_Hub,
+            Text = colorName,
+            TextColor3 = Configs_HUB.Cor_DarkText,
+            Font = Configs_HUB.Text_Font
+        }) Corner(button) Stroke(button)
+
+        button.MouseButton1Click:Connect(function()
+            local colorValue = Color3.fromRGB(255, 0, 0) -- Red by default
+            if colorName == "أخضر" then
+                colorValue = Color3.fromRGB(0, 255, 0)
+            elseif colorName == "أزرق" then
+                colorValue = Color3.fromRGB(0, 100, 255)
+            end
+
+            Callback(colorValue)
+            ScrollBar.Visible = false
+            ScrollBar.Size = UDim2.new(1, 0, 0, 0)
+            DropdownVisible = false
+        end)
+    end
+
+    Frame.MouseButton1Click:Connect(function()
+        DropdownVisible = not DropdownVisible
+        ScrollBar.Visible = DropdownVisible
+        ScrollBar.Size = DropdownVisible and UDim2.new(1, 0, 0, #Options * 30) or UDim2.new(1, 0, 0, 0)
+    end)
+end
+
     local function AddOption(OptionName)
       local TextButton = Create("TextButton", ScrollBar, {
         Size = UDim2.new(1, 0, 0, 15),
