@@ -1365,7 +1365,7 @@ end
     })
     function AddDrobColor(parent, Configs)
     local DropdownName = Configs.Name or "Drob Color"
-    local Options = Configs.Options or {"أحمر", "أخضر", "أزرق"}
+    local Options = Configs.Options or {"أحمر", "برتقالي", "أصفر", "أخضر", "أزرق", "نيلي", "بنفسجي"}
     local Callback = Configs.Callback or function() end
 
     local Frame = Create("TextButton", parent, {
@@ -1419,7 +1419,16 @@ end
         Padding = UDim.new(0, 5)
     })
 
-    -- خيارات الألوان
+    local RainbowColors = {
+        ["أحمر"] = Color3.fromRGB(255, 0, 0),
+        ["برتقالي"] = Color3.fromRGB(255, 128, 0),
+        ["أصفر"] = Color3.fromRGB(255, 255, 0),
+        ["أخضر"] = Color3.fromRGB(0, 255, 0),
+        ["أزرق"] = Color3.fromRGB(0, 100, 255),
+        ["نيلي"] = Color3.fromRGB(75, 0, 130),
+        ["بنفسجي"] = Color3.fromRGB(128, 0, 128)
+    }
+
     for _, colorName in ipairs(Options) do
         local button = Create("TextButton", ScrollBar, {
             Size = UDim2.new(1, 0, 0, 25),
@@ -1427,14 +1436,29 @@ end
             Text = colorName,
             TextColor3 = Configs_HUB.Cor_DarkText,
             Font = Configs_HUB.Text_Font
-        }) Corner(button) Stroke(button)
+        })
+        Corner(button) Stroke(button)
 
         button.MouseButton1Click:Connect(function()
-            local colorValue = Color3.fromRGB(255, 0, 0) -- Red by default
-            if colorName == "أخضر" then
-                colorValue = Color3.fromRGB(0, 255, 0)
-            elseif colorName == "أزرق" then
-                colorValue = Color3.fromRGB(0, 100, 255)
+            local colorValue = RainbowColors[colorName] or Color3.fromRGB(255, 255, 255)
+
+            for _, child in ipairs(parent:GetDescendants()) do
+                if child:IsA("TextButton") or child:IsA("ImageButton") then
+                    local stroke = child:FindFirstChildOfClass("UIStroke")
+                    if stroke then
+                        stroke.Color = colorValue
+                    else
+                        local newStroke = Instance.new("UIStroke", child)
+                        newStroke.Thickness = 1.5
+                        newStroke.Color = colorValue
+                    end
+
+                    local corner = child:FindFirstChildOfClass("UICorner")
+                    if not corner then
+                        local newCorner = Instance.new("UICorner", child)
+                        newCorner.CornerRadius = UDim.new(0, 8)
+                    end
+                end
             end
 
             Callback(colorValue)
