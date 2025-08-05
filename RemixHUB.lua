@@ -1606,7 +1606,6 @@ AddButton(Main, {
         end)
     end
 })
-local Main = MakeTab({Name = "تخريب على سيرفر كامل"})
 
 AddButton(Main, {
     Name = "اقتل كل باص",
